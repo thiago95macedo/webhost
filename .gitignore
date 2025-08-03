@@ -1,0 +1,85 @@
+# Arquivos de sistema
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+logs/
+
+# Arquivos temporários
+*.tmp
+*.temp
+/tmp/
+/temp/
+
+# Arquivos de backup
+*.bak
+*.backup
+backups/
+*.sql
+*.tar.gz
+
+# Arquivos de configuração sensíveis (gerais)
+.env
+*.key
+*.pem
+
+# Informações de sites WordPress locais (contêm dados sensíveis)
+site-info/
+
+# Arquivos sensíveis dos projetos (sites/)
+sites/*/wp-config.php
+sites/*/wp-content/uploads/
+sites/*/wp-content/cache/
+sites/*/wp-content/backup-db/
+sites/*/wp-content/backups/
+sites/*/.env
+sites/*/error_log
+sites/*/access_log
+
+# Arquivos de cache (gerais)
+cache/
+
+# Arquivos de desenvolvimento
+node_modules/
+vendor/
+composer.lock
+package-lock.json
+
+# Arquivos de IDE
+.vscode/
+.idea/
+*.sublime-*
+
+# Arquivos de teste
+test-*
+*.test
+
+# Arquivos de download
+latest.zip
+wordpress/
+
+# Arquivos de configuração local
+nginx.conf.local
+mysql.conf.local
+
+# Arquivos de senha
+*.pass
+*.pwd
+
+# Arquivos de lock
+*.lock
+
+# Arquivos de sessão
+sess_*
+
+
+
+# Arquivos de configuração do sistema
+/etc/nginx/sites-available/*
+/etc/nginx/sites-enabled/*
+/var/log/nginx/*
+/var/log/mysql/*
