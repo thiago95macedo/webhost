@@ -140,8 +140,10 @@ body {
 .cards-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, 1fr);
     gap: 0.75rem;
     margin-bottom: 1.5rem;
+    min-height: 200px;
 }
 
 /* Cards */
@@ -178,7 +180,7 @@ body {
 }
 
 .card-content h3 {
-    font-size: 0.6rem;
+    font-size: 0.75rem;
     font-weight: 500;
     color: var(--dark-gray);
     margin-bottom: 0.2rem;
@@ -187,7 +189,7 @@ body {
 }
 
 .card-value {
-    font-size: 0.55rem;
+    font-size: 0.7rem;
     font-weight: 500;
     color: var(--primary-blue);
     line-height: 1.1;
@@ -219,7 +221,12 @@ body {
 }
 
 .btn-success {
-    background: linear-gradient(135deg, var(--success), #20c997);
+    background: var(--success);
+    color: white;
+}
+
+.btn-refresh {
+    background: var(--success);
     color: white;
 }
 
@@ -354,7 +361,9 @@ body {
 .quick-actions {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, 1fr);
     gap: 0.75rem;
+    min-height: 200px;
 }
 
 

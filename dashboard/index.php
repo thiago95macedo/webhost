@@ -18,7 +18,7 @@
                     <h1>WordPress Dev Dashboard</h1>
                 </div>
                 <div class="header-actions">
-                    <button class="btn btn-primary" onclick="refreshData()">
+                    <button class="btn btn-refresh" onclick="refreshData()">
                         <i class="fas fa-sync-alt"></i>
                         Atualizar
                     </button>
