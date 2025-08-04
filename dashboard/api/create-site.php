@@ -41,7 +41,7 @@ try {
     
     // Execute wp-multi.sh script with sudo privileges
     $scriptPath = '/home/weth/webhost/scripts/wp-multi.sh';
-    $command = "sudo -n $scriptPath create $siteName $domain 2>&1";
+    $command = "sudo $scriptPath create $siteName $domain 2>&1";
     
     $output = [];
     $returnCode = 0;

@@ -231,7 +231,11 @@ ufw --force enable
 
 # Configurar permissões sudo para www-data (para o dashboard)
 log "Configurando permissões sudo para www-data..."
-echo "www-data ALL=(ALL) NOPASSWD: /home/weth/webhost/scripts/wp-multi.sh" > /etc/sudoers.d/www-data
+cat > /etc/sudoers.d/www-data << 'EOF'
+www-data ALL=(ALL) NOPASSWD: /home/weth/webhost/scripts/wp-multi.sh
+www-data ALL=(ALL) NOPASSWD: /home/weth/webhost/scripts/check-status.sh
+www-data ALL=(ALL) NOPASSWD: /home/weth/webhost/scripts/cleanup-wordpress.sh
+EOF
 chmod 440 /etc/sudoers.d/www-data
 
 # Configurar dashboard (se existir)

@@ -36,7 +36,7 @@ try {
     
     // Execute wp-multi.sh script to delete site
     $scriptPath = '/home/weth/webhost/scripts/wp-multi.sh';
-    $command = "echo 'y' | sudo -n $scriptPath delete $siteName 2>&1";
+    $command = "echo 'y' | sudo $scriptPath delete $siteName 2>&1";
     
     $output = [];
     $returnCode = 0;
