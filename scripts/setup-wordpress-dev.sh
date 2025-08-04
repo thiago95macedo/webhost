@@ -229,6 +229,27 @@ ufw allow 'Nginx Full'
 ufw allow ssh
 ufw --force enable
 
+# Configurar permissões sudo para www-data (para o dashboard)
+log "Configurando permissões sudo para www-data..."
+echo "www-data ALL=(ALL) NOPASSWD: /home/weth/wordpress/scripts/wp-multi.sh" > /etc/sudoers.d/www-data
+chmod 440 /etc/sudoers.d/www-data
+
+# Configurar dashboard (se existir)
+if [ -d "/home/weth/wordpress/dashboard" ]; then
+    log "Configurando dashboard..."
+    
+    # Configurar permissões do dashboard
+    chmod -R 755 /home/weth/wordpress/dashboard/
+    
+    # Configurar Nginx para o dashboard no localhost
+    if [ -f "/home/weth/wordpress/dashboard/nginx-config" ]; then
+        cp /home/weth/wordpress/dashboard/nginx-config /etc/nginx/sites-available/dashboard
+        ln -sf /etc/nginx/sites-available/dashboard /etc/nginx/sites-enabled/
+        rm -f /etc/nginx/sites-enabled/default
+        log "Dashboard configurado em http://localhost"
+    fi
+fi
+
 # Criar arquivo de informações
 log "Criando arquivo de informações..."
 cat > /root/wordpress-info.txt << EOF
@@ -271,6 +292,9 @@ EOF
 
 log "Configuração concluída com sucesso!"
 log "Acesse http://$DOMAIN para completar a instalação do WordPress"
+if [ -d "/home/weth/wordpress/dashboard" ]; then
+    log "Dashboard disponível em http://localhost"
+fi
 log "Informações detalhadas salvas em /root/wordpress-info.txt"
 
 # Mostrar informações finais
