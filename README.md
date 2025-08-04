@@ -58,8 +58,8 @@ sudo ./scripts/setup-wordpress-dev.sh
 ```
 
 **Após a execução:**
-1. Acesse `http://localhost` no navegador
-2. Complete a instalação do WordPress
+1. Acesse `http://localhost` no navegador para o dashboard
+2. Para sites WordPress individuais, use as URLs específicas
 3. Configure o título do site e credenciais de administrador
 
 **Nota:** Sites criados com `wp-multi.sh` usam URLs como `http://localhost:9001`, `http://localhost:9002`, etc.
@@ -124,6 +124,21 @@ Este script verifica o status completo do ambiente WordPress local.
 - ✅ Conectividade com internet
 - ✅ Logs recentes de erros
 
+### Dashboard Web
+
+Este projeto inclui um dashboard web moderno para gerenciar sites WordPress locais.
+
+**Configuração Automática:**
+O dashboard é configurado automaticamente durante a instalação do ambiente WordPress.
+
+**Acesso:**
+- **URL:** http://localhost
+- **Funcionalidades:**
+  - Monitoramento de recursos do sistema
+  - Criação e gerenciamento de sites
+  - Visualização de logs
+  - Interface moderna e responsiva
+
 ## 🔧 Configurações Padrão
 
 ### Credenciais MySQL Root
@@ -132,8 +147,8 @@ Este script verifica o status completo do ambiente WordPress local.
 
 ### Estrutura de Diretórios
 - **Web Root (setup-wordpress-dev.sh):** `/var/www/html`
-- **Sites (wp-multi.sh):** `/home/weth/wordpress/sites/`
-- **Informações dos sites:** `/home/weth/wordpress/site-info/`
+- **Sites (wp-multi.sh):** `/home/weth/webhost/sites/`
+- **Informações dos sites:** `/home/weth/webhost/site-info/`
 - **Logs Nginx:** `/var/log/nginx/`
 - **Backups:** `/root/backups/`
 
@@ -147,12 +162,17 @@ Este script verifica o status completo do ambiente WordPress local.
 ## 📁 Estrutura de Arquivos
 
 ```
-/home/weth/wordpress/
+/home/weth/webhost/
 ├── scripts/
 │   ├── setup-wordpress-dev.sh    # Script principal de instalação
 │   ├── wp-multi.sh              # Script de gerenciamento de múltiplos sites
 │   ├── check-status.sh          # Script de verificação de status
 │   └── cleanup-wordpress.sh     # Script de limpeza completa
+├── dashboard/                    # Dashboard web para gerenciamento
+│   ├── index.php                # Interface principal
+│   ├── api/                     # APIs do dashboard
+│   ├── assets/                  # CSS, JS e recursos
+│   └── nginx-config            # Configuração Nginx
 ├── sites/                       # Sites criados pelo wp-multi.sh
 ├── site-info/                   # Informações dos sites
 └── README.md                    # Este arquivo
@@ -227,7 +247,7 @@ sudo ./scripts/wp-multi.sh logs teste
 ./scripts/check-status.sh
 
 # Ver informações do site
-cat /home/weth/wordpress/site-info/teste-info.txt
+cat /home/weth/webhost/site-info/teste-info.txt
 ```
 
 ### Banco de Dados

@@ -32,7 +32,7 @@ try {
     }
     
     // Check if site already exists
-    $webRoot = '/home/weth/wordpress/sites';
+    $webRoot = '/home/weth/webhost/sites';
     $siteDir = $webRoot . '/' . $siteName;
     
     if (is_dir($siteDir)) {
@@ -40,7 +40,7 @@ try {
     }
     
     // Execute wp-multi.sh script with sudo privileges
-    $scriptPath = '/home/weth/wordpress/scripts/wp-multi.sh';
+    $scriptPath = '/home/weth/webhost/scripts/wp-multi.sh';
     $command = "sudo -n $scriptPath create $siteName $domain 2>&1";
     
     $output = [];
@@ -71,8 +71,8 @@ try {
 }
 
 function getSiteInfo($siteName) {
-    $webRoot = '/home/weth/wordpress/sites';
-    $infoDir = '/home/weth/wordpress/site-info';
+    $webRoot = '/home/weth/webhost/sites';
+    $infoDir = '/home/weth/webhost/site-info';
     $nginxSitesEnabled = '/etc/nginx/sites-enabled';
     
     $siteDir = $webRoot . '/' . $siteName;

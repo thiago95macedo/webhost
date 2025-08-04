@@ -27,11 +27,11 @@ error() {
 }
 
 # Configurações padrão
-WEB_ROOT="/home/weth/wordpress/sites"
+WEB_ROOT="/home/weth/webhost/sites"
 NGINX_SITES_AVAILABLE="/etc/nginx/sites-available"
 NGINX_SITES_ENABLED="/etc/nginx/sites-enabled"
 MYSQL_ROOT_PASSWORD="root123"
-INFO_DIR="/home/weth/wordpress/site-info"
+INFO_DIR="/home/weth/webhost/site-info"
 
 # Configurações padrão do WordPress
 WP_ADMIN_USER="admin"
@@ -543,7 +543,7 @@ delete_site() {
     log "Deletando arquivos..."
     rm -rf "$WEB_ROOT/$site_name"
     # Remover também do diretório antigo (compatibilidade)
-    rm -rf "/home/weth/wordpress/sites/$site_name"
+    rm -rf "/home/weth/webhost/sites/$site_name"
     
     # Deletar configuração Nginx
     log "Removendo configuração Nginx..."
@@ -601,7 +601,7 @@ list_sites() {
 # Função para fazer backup
 backup_site() {
     local site_name=$1
-    local backup_dir="/home/weth/wordpress/backups"
+    local backup_dir="/home/weth/webhost/backups"
     local timestamp=$(date +%Y%m%d_%H%M%S)
     local backup_file="$backup_dir/${site_name}_${timestamp}.tar.gz"
     

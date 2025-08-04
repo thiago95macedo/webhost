@@ -36,8 +36,8 @@ try {
 }
 
 function getDetailedSiteInfo($siteName) {
-    $webRoot = '/home/weth/wordpress/sites';
-    $infoDir = '/home/weth/wordpress/site-info';
+    $webRoot = '/home/weth/webhost/sites';
+    $infoDir = '/home/weth/webhost/site-info';
     $nginxSitesEnabled = '/etc/nginx/sites-enabled';
     $nginxSitesAvailable = '/etc/nginx/sites-available';
     

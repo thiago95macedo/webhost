@@ -439,7 +439,7 @@ function simulateBackup() {
                     <div class="text-center">
                         <i class="fas fa-check-circle" style="font-size: 3rem; color: var(--success); margin-bottom: 1rem;"></i>
                         <h3>Backup concluído com sucesso!</h3>
-                        <p>Todos os sites foram salvos em /home/weth/wordpress/backups/</p>
+                        <p>Todos os sites foram salvos em /home/weth/webhost/backups/</p>
                     </div>
                 `);
             }, 500);

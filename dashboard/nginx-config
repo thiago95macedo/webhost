@@ -2,7 +2,7 @@ server {
     listen 80;
     server_name localhost 127.0.0.1;
     
-    root /home/weth/wordpress/dashboard;
+    root /home/weth/webhost/dashboard;
     index index.php index.html;
     
     # Security headers
