@@ -28,50 +28,101 @@
 
         <!-- Main Content -->
         <main class="dashboard-main">
-            <!-- System Info Cards -->
+            <!-- System Info and Quick Actions Row -->
             <section class="dashboard-section">
-                <h2 class="section-title">
-                    <i class="fas fa-server"></i>
-                    Informações do Sistema
-                </h2>
-                <div class="cards-grid">
-                    <div class="card system-card">
-                        <div class="card-icon">
-                            <i class="fas fa-microchip"></i>
-                        </div>
-                        <div class="card-content">
-                            <h3>Processador</h3>
-                            <p class="card-value" id="cpu-info">Carregando...</p>
+                <div class="two-column-layout">
+                    <!-- System Info Cards -->
+                    <div class="column">
+                        <h2 class="section-title">
+                            <i class="fas fa-server"></i>
+                            Informações do Sistema
+                        </h2>
+                        <div class="cards-grid">
+                            <div class="info-card">
+                                <div class="card-icon">
+                                    <i class="fas fa-microchip"></i>
+                                </div>
+                                <div class="card-content">
+                                    <h3>Processador</h3>
+                                    <p class="card-value" id="cpu-info">Carregando...</p>
+                                </div>
+                            </div>
+
+                            <div class="info-card">
+                                <div class="card-icon">
+                                    <i class="fas fa-memory"></i>
+                                </div>
+                                <div class="card-content">
+                                    <h3>Memória RAM</h3>
+                                    <p class="card-value" id="memory-info">Carregando...</p>
+                                </div>
+                            </div>
+
+                            <div class="info-card">
+                                <div class="card-icon">
+                                    <i class="fas fa-hdd"></i>
+                                </div>
+                                <div class="card-content">
+                                    <h3>Disco</h3>
+                                    <p class="card-value" id="disk-info">Carregando...</p>
+                                </div>
+                            </div>
+
+                            <div class="info-card">
+                                <div class="card-icon">
+                                    <i class="fas fa-network-wired"></i>
+                                </div>
+                                <div class="card-content">
+                                    <h3>Rede</h3>
+                                    <p class="card-value" id="network-info">Carregando...</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="card system-card">
-                        <div class="card-icon">
-                            <i class="fas fa-memory"></i>
-                        </div>
-                        <div class="card-content">
-                            <h3>Memória RAM</h3>
-                            <p class="card-value" id="memory-info">Carregando...</p>
-                        </div>
-                    </div>
-
-                    <div class="card system-card">
-                        <div class="card-icon">
-                            <i class="fas fa-hdd"></i>
-                        </div>
-                        <div class="card-content">
-                            <h3>Disco</h3>
-                            <p class="card-value" id="disk-info">Carregando...</p>
-                        </div>
-                    </div>
-
-                    <div class="card system-card">
-                        <div class="card-icon">
-                            <i class="fas fa-network-wired"></i>
-                        </div>
-                        <div class="card-content">
-                            <h3>Rede</h3>
-                            <p class="card-value" id="network-info">Carregando...</p>
+                    <!-- Quick Actions -->
+                    <div class="column">
+                        <h2 class="section-title">
+                            <i class="fas fa-bolt"></i>
+                            Ações Rápidas
+                        </h2>
+                        <div class="quick-actions">
+                            <div class="info-card" onclick="showSystemStatus()">
+                                <div class="card-icon">
+                                    <i class="fas fa-heartbeat"></i>
+                                </div>
+                                <div class="card-content">
+                                    <h3>Status do Sistema</h3>
+                                    <p class="card-value">Monitorar</p>
+                                </div>
+                            </div>
+                            <div class="info-card" onclick="showLogs()">
+                                <div class="card-icon">
+                                    <i class="fas fa-file-alt"></i>
+                                </div>
+                                <div class="card-content">
+                                    <h3>Ver Logs</h3>
+                                    <p class="card-value">Visualizar</p>
+                                </div>
+                            </div>
+                            <div class="info-card" onclick="backupAllSites()">
+                                <div class="card-icon">
+                                    <i class="fas fa-download"></i>
+                                </div>
+                                <div class="card-content">
+                                    <h3>Backup Geral</h3>
+                                    <p class="card-value">Salvar</p>
+                                </div>
+                            </div>
+                            <div class="info-card" onclick="showSettings()">
+                                <div class="card-icon">
+                                    <i class="fas fa-cog"></i>
+                                </div>
+                                <div class="card-content">
+                                    <h3>Configurações</h3>
+                                    <p class="card-value">Ajustar</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -94,32 +145,6 @@
                         <i class="fas fa-spinner fa-spin"></i>
                         <p>Carregando sites...</p>
                     </div>
-                </div>
-            </section>
-
-            <!-- Quick Actions -->
-            <section class="dashboard-section">
-                <h2 class="section-title">
-                    <i class="fas fa-bolt"></i>
-                    Ações Rápidas
-                </h2>
-                <div class="quick-actions">
-                    <button class="action-btn" onclick="showSystemStatus()">
-                        <i class="fas fa-heartbeat"></i>
-                        Status do Sistema
-                    </button>
-                    <button class="action-btn" onclick="showLogs()">
-                        <i class="fas fa-file-alt"></i>
-                        Ver Logs
-                    </button>
-                    <button class="action-btn" onclick="backupAllSites()">
-                        <i class="fas fa-download"></i>
-                        Backup Geral
-                    </button>
-                    <button class="action-btn" onclick="showSettings()">
-                        <i class="fas fa-cog"></i>
-                        Configurações
-                    </button>
                 </div>
             </section>
         </main>

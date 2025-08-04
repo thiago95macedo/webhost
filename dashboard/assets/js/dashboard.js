@@ -112,24 +112,12 @@ class WordPressDashboard {
                         <span class="site-info-label">URL:</span>
                         <span class="site-info-value">${site.url}</span>
                     </div>
-                    <div class="site-info-item">
-                        <span class="site-info-label">Porta:</span>
-                        <span class="site-info-value">${site.port}</span>
-                    </div>
-                    <div class="site-info-item">
-                        <span class="site-info-label">Diretório:</span>
-                        <span class="site-info-value">${site.directory}</span>
-                    </div>
-                    <div class="site-info-item">
-                        <span class="site-info-label">Criado em:</span>
-                        <span class="site-info-value">${this.formatDate(site.created_at)}</span>
-                    </div>
                 </div>
                 
                 <div class="site-actions">
                     <a href="${site.url}" target="_blank" class="btn btn-primary">
                         <i class="fas fa-external-link-alt"></i>
-                        Acessar Site
+                        Site
                     </a>
                     <a href="${site.url}/wp-admin" target="_blank" class="btn btn-success">
                         <i class="fas fa-cog"></i>
@@ -141,7 +129,7 @@ class WordPressDashboard {
                     </button>
                     <button class="btn btn-danger" onclick="deleteSite('${site.name}')">
                         <i class="fas fa-trash"></i>
-                        Deletar
+                        Del
                     </button>
                 </div>
             </div>
@@ -236,6 +224,16 @@ async function handleCreateSite(event) {
     const siteName = formData.get('site-name');
     const domain = formData.get('site-domain') || 'localhost';
     
+    // Mostrar animação de loading
+    const submitButton = event.target.querySelector('button[type="submit"]');
+    const originalButtonContent = submitButton.innerHTML;
+    
+    submitButton.innerHTML = `
+        <i class="fas fa-spinner fa-spin"></i>
+        Criando Site...
+    `;
+    submitButton.disabled = true;
+    
     try {
         const response = await fetch('api/create-site.php', {
             method: 'POST',
@@ -265,6 +263,10 @@ async function handleCreateSite(event) {
         }
     } catch (error) {
         dashboard.showError('Erro ao criar site: ' + error.message);
+    } finally {
+        // Restaurar botão original
+        submitButton.innerHTML = originalButtonContent;
+        submitButton.disabled = false;
     }
 }
 
@@ -288,12 +290,14 @@ function showSiteInfo(siteName) {
                             <h4>Banco de Dados</h4>
                             <p><strong>Database:</strong> ${site.database.name}</p>
                             <p><strong>Usuário:</strong> ${site.database.user}</p>
+                            <p><strong>Senha:</strong> ${site.database.password || 'Não disponível'}</p>
                             <p><strong>Host:</strong> ${site.database.host}</p>
                         </div>
                         
                         <div class="info-group">
                             <h4>Administrador</h4>
                             <p><strong>Usuário:</strong> ${site.admin.user}</p>
+                            <p><strong>Senha:</strong> ${site.admin.password || 'Não disponível'}</p>
                             <p><strong>Email:</strong> ${site.admin.email}</p>
                         </div>
                         
@@ -435,7 +439,7 @@ function simulateBackup() {
                     <div class="text-center">
                         <i class="fas fa-check-circle" style="font-size: 3rem; color: var(--success); margin-bottom: 1rem;"></i>
                         <h3>Backup concluído com sucesso!</h3>
-                        <p>Todos os sites foram salvos em /root/backups/</p>
+                        <p>Todos os sites foram salvos em /home/weth/wordpress/backups/</p>
                     </div>
                 `);
             }, 500);

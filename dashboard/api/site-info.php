@@ -162,6 +162,11 @@ function getDatabaseInfoFromWpConfig($wpConfigFile) {
         $dbInfo['user'] = $matches[1];
     }
     
+    // Extract database password
+    if (preg_match("/define\(\s*'DB_PASSWORD',\s*'([^']*)'\s*\);/", $content, $matches)) {
+        $dbInfo['password'] = $matches[1];
+    }
+    
     // Extract database host
     if (preg_match("/define\(\s*'DB_HOST',\s*'([^']+)'\s*\);/", $content, $matches)) {
         $dbInfo['host'] = $matches[1];
@@ -175,14 +180,19 @@ function getAdminInfoFromFile($infoFile) {
     
     $adminInfo = [];
     
-    // Extract admin user
-    if (preg_match('/Usuário:\s+(\S+)/', $content, $matches)) {
-        $adminInfo['user'] = $matches[1];
+    // Extract admin user from CREDENCIAIS DO ADMINISTRADOR section
+    if (preg_match('/CREDENCIAIS DO ADMINISTRADOR:.*?- Usuário:\s+(\S+)/s', $content, $matches)) {
+        $adminInfo['user'] = trim($matches[1]);
     }
     
-    // Extract admin email
-    if (preg_match('/Email:\s+(\S+)/', $content, $matches)) {
-        $adminInfo['email'] = $matches[1];
+    // Extract admin password from CREDENCIAIS DO ADMINISTRADOR section
+    if (preg_match('/CREDENCIAIS DO ADMINISTRADOR:.*?- Senha:\s+(\S+)/s', $content, $matches)) {
+        $adminInfo['password'] = trim($matches[1]);
+    }
+    
+    // Extract admin email from CREDENCIAIS DO ADMINISTRADOR section
+    if (preg_match('/CREDENCIAIS DO ADMINISTRADOR:.*?- Email:\s+(\S+)/s', $content, $matches)) {
+        $adminInfo['email'] = trim($matches[1]);
     }
     
     return $adminInfo;

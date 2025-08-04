@@ -82,8 +82,8 @@ function getSiteInfo($siteName) {
         'name' => $siteName,
         'url' => '',
         'port' => '',
-        'admin_user' => 'admin',
-        'admin_password' => '@admin@1q2w3e4r',
+        'admin_user' => '',
+        'admin_password' => '',
         'directory' => $siteDir,
         'active' => false
     ];
@@ -102,14 +102,14 @@ function getSiteInfo($siteName) {
     if (file_exists($infoFile)) {
         $content = file_get_contents($infoFile);
         
-        // Extract admin password
-        if (preg_match('/Senha:\s+(\S+)/', $content, $matches)) {
-            $siteInfo['admin_password'] = $matches[1];
+        // Extract admin password from CREDENCIAIS DO ADMINISTRADOR section
+        if (preg_match('/CREDENCIAIS DO ADMINISTRADOR:.*?- Senha:\s+(\S+)/s', $content, $matches)) {
+            $siteInfo['admin_password'] = trim($matches[1]);
         }
         
-        // Extract admin user
-        if (preg_match('/Usuário:\s+(\S+)/', $content, $matches)) {
-            $siteInfo['admin_user'] = $matches[1];
+        // Extract admin user from CREDENCIAIS DO ADMINISTRADOR section
+        if (preg_match('/CREDENCIAIS DO ADMINISTRADOR:.*?- Usuário:\s+(\S+)/s', $content, $matches)) {
+            $siteInfo['admin_user'] = trim($matches[1]);
         }
     }
     

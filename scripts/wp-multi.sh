@@ -124,7 +124,7 @@ install_wordpress() {
     
     rm latest-pt_BR.zip
     
-    # Substituir arquivos do site pelo WordPress em português
+    # Copiar arquivos do WordPress em português para o diretório do site
     log "Instalando WordPress..."
     cp -rf wordpress/* "$site_path/"
     rm -rf wordpress
@@ -372,31 +372,9 @@ create_site() {
     mysql -u root -p$MYSQL_ROOT_PASSWORD -e "GRANT ALL PRIVILEGES ON $db_name.* TO '$db_user'@'localhost';"
     mysql -u root -p$MYSQL_ROOT_PASSWORD -e "FLUSH PRIVILEGES;"
     
-    # Baixar WordPress
-    log "Baixando WordPress"
-    cd /tmp
-    rm -rf wordpress 2>/dev/null || true
-    rm -f latest.zip 2>/dev/null || true
-    if ! wget --timeout=60 --tries=3 --progress=bar:force https://wordpress.org/latest.zip; then
-        error "Falha ao baixar WordPress. Verifique sua conexão com a internet."
-    fi
-    
-    # Verificar se o arquivo foi baixado corretamente
-    if [ ! -f "latest.zip" ] || [ ! -s "latest.zip" ]; then
-        error "Arquivo WordPress não foi baixado corretamente."
-    fi
-    
-    # Extrair WordPress
-    if ! unzip -q latest.zip; then
-        error "Falha ao extrair WordPress. Arquivo pode estar corrompido."
-    fi
-    
-    rm latest.zip
-    
     # Criar diretório do site
     log "Criando diretório do site em: $WEB_ROOT/$site_name"
     mkdir -p "$WEB_ROOT/$site_name"
-    cp -rf wordpress/* "$WEB_ROOT/$site_name/"
     
     # Configurar permissões
     log "Configurando permissões..."
@@ -416,45 +394,8 @@ create_site() {
     [ -d "$WEB_ROOT/$site_name/wp-content/plugins" ] && chmod -R 775 "$WEB_ROOT/$site_name/wp-content/plugins"
     [ -d "$WEB_ROOT/$site_name/wp-content/themes" ] && chmod -R 775 "$WEB_ROOT/$site_name/wp-content/themes"
     
-    # Configurar wp-config.php
+    # Configurar WordPress (será feito na função install_wordpress)
     log "Configurando WordPress..."
-    cp "$WEB_ROOT/$site_name/wp-config-sample.php" "$WEB_ROOT/$site_name/wp-config.php"
-    
-    # Usar perl para substituições mais seguras
-    perl -pi -e "s/database_name_here/$db_name/g" "$WEB_ROOT/$site_name/wp-config.php"
-    perl -pi -e "s/username_here/$db_user/g" "$WEB_ROOT/$site_name/wp-config.php"
-    perl -pi -e "s/password_here/$db_password/g" "$WEB_ROOT/$site_name/wp-config.php"
-    
-    # Gerar chaves de segurança
-    log "Gerando chaves de segurança..."
-    SALT=$(curl -s -L -m 60 https://api.wordpress.org/secret-key/1.1/salt/ 2>/dev/null || echo "ERROR")
-    
-    if [ "$SALT" != "ERROR" ]; then
-        # Salvar chaves em arquivo temporário
-        echo "$SALT" > /tmp/wp-keys.txt
-        # Substituir seção de chaves usando uma abordagem mais simples
-        # Primeiro, encontrar as linhas de início e fim
-        START_LINE=$(grep -n "#@+" "$WEB_ROOT/$site_name/wp-config.php" | cut -d: -f1)
-        END_LINE=$(grep -n "#@-" "$WEB_ROOT/$site_name/wp-config.php" | cut -d: -f1)
-        
-        if [ -n "$START_LINE" ] && [ -n "$END_LINE" ]; then
-            # Criar arquivo temporário com o conteúdo antes das chaves
-            head -n $((START_LINE - 1)) "$WEB_ROOT/$site_name/wp-config.php" > /tmp/wp-config-temp.txt
-            # Adicionar as chaves
-            cat /tmp/wp-keys.txt >> /tmp/wp-config-temp.txt
-            # Adicionar o resto do arquivo
-            tail -n +$((END_LINE + 1)) "$WEB_ROOT/$site_name/wp-config.php" >> /tmp/wp-config-temp.txt
-            # Substituir o arquivo original
-            mv /tmp/wp-config-temp.txt "$WEB_ROOT/$site_name/wp-config.php"
-            log "Chaves de segurança geradas com sucesso"
-        else
-            warn "Não foi possível localizar as seções de chaves no wp-config.php"
-        fi
-        rm -f /tmp/wp-keys.txt
-    else
-        warn "Erro ao gerar chaves de segurança, mantendo chaves padrão"
-        log "Chaves padrão mantidas (funcionais mas menos seguras)"
-    fi
     
     # Configurar Nginx
     log "Configurando Nginx..."
@@ -660,7 +601,7 @@ list_sites() {
 # Função para fazer backup
 backup_site() {
     local site_name=$1
-    local backup_dir="/root/backups"
+    local backup_dir="/home/weth/wordpress/backups"
     local timestamp=$(date +%Y%m%d_%H%M%S)
     local backup_file="$backup_dir/${site_name}_${timestamp}.tar.gz"
     
