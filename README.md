@@ -331,12 +331,120 @@ www-data ALL=(ALL) NOPASSWD: SETENV: /opt/webhost/scripts/wp-multi.sh
 
 Isso permite que o dashboard execute comandos administrativos sem solicitar senha, incluindo a definição da variável de ambiente `AUTO_CONFIRM` para confirmação automática de operações.
 
+## ⚙️ Automação WordPress
+
+### Como Funciona a Automação
+
+O projeto utiliza **automação WordPress nativa** implementada diretamente no script `wp-multi.sh`, **sem dependência do WP-CLI externo**:
+
+#### 🔧 **Processo de Instalação Automática**
+
+1. **Download e Configuração**:
+   - Baixa WordPress em português brasileiro automaticamente
+   - Configura `wp-config.php` com credenciais do banco
+   - Define configurações personalizadas (timezone, idioma, etc.)
+
+2. **Instalação via PHP Nativo**:
+   ```php
+   // Carrega WordPress diretamente
+   require_once('wp-load.php');
+   require_once('wp-admin/includes/upgrade.php');
+   
+   // Usa função nativa do WordPress
+   $result = wp_install($site_name, $admin_user, $admin_email, ...);
+   ```
+
+3. **Personalização Automática**:
+   - ✅ Remove posts padrão ("Hello World", "Olá, mundo!")
+   - ✅ Remove páginas de exemplo
+   - ✅ Oculta painel de boas-vindas
+   - ✅ Configura timezone brasileiro (`America/Sao_Paulo`)
+   - ✅ Define formato de data brasileiro (`d/m/Y`)
+   - ✅ Configura permalinks amigáveis (`/%postname%/`)
+   - ✅ Cria página inicial personalizada
+   - ✅ Define idioma português (`pt_BR`)
+
+#### 🎯 **Vantagens da Automação Nativa**
+
+- **✅ Sem dependências externas** - Não precisa instalar WP-CLI
+- **✅ Mais rápido** - Execução direta via PHP
+- **✅ Mais confiável** - Usa funções nativas do WordPress
+- **✅ Totalmente personalizada** - Configurações específicas do projeto
+- **✅ Controle total** - Pode adicionar qualquer customização
+
+#### 📋 **Diferença do WP-CLI**
+
+| Aspecto | Automação Nativa | WP-CLI |
+|---------|------------------|--------|
+| **Dependência** | Nenhuma | Requer instalação |
+| **Velocidade** | Mais rápido | Mais lento |
+| **Personalização** | Total | Limitada |
+| **Manutenção** | Menor | Maior |
+| **Uso** | Automático | Manual |
+
+**Nota**: O WP-CLI seria útil apenas para gerenciamento manual via linha de comando, mas para automação de criação de sites, a implementação nativa é superior.
+
+## 🔧 Troubleshooting
+
+### Problemas Comuns
+
+#### **Dashboard não carrega em localhost**
+```bash
+# Verificar se o Nginx está rodando
+sudo systemctl status nginx
+
+# Verificar configuração do dashboard
+sudo nginx -t
+
+# Recarregar Nginx
+sudo systemctl reload nginx
+```
+
+#### **Erro ao criar/deletar sites via dashboard**
+```bash
+# Verificar permissões do sudoers
+sudo cat /etc/sudoers.d/www-data
+
+# Verificar se www-data está no grupo correto
+groups www-data
+
+# Verificar logs do Nginx
+sudo tail -f /var/log/nginx/error.log
+```
+
+#### **Sites com portas duplicadas**
+```bash
+# Verificar portas em uso
+ss -tuln | grep :900
+
+# Verificar configurações do Nginx
+ls -la /etc/nginx/sites-enabled/
+```
+
+#### **Permissões insuficientes**
+```bash
+# Verificar permissões do diretório
+ls -la /opt/webhost/
+
+# Corrigir permissões se necessário
+sudo chown -R :sudo /opt/webhost
+sudo chmod -R 775 /opt/webhost
+sudo chmod g+s /opt/webhost
+```
+
+### Logs Importantes
+
+- **Nginx**: `/var/log/nginx/error.log`
+- **PHP-FPM**: `/var/log/php8.1-fpm.log`
+- **MySQL**: `/var/log/mysql/error.log`
+- **Scripts**: Saída colorida no terminal
+
 ## 📞 Suporte
 
 Para problemas ou dúvidas:
 1. Verifique os logs de erro
 2. Execute `./scripts/wp-multi.sh help` para ver comandos disponíveis
-3. Consulte a seção de troubleshooting
+3. Consulte a seção de troubleshooting acima
 
 ## 📝 Changelog
 
@@ -347,7 +455,7 @@ Para problemas ou dúvidas:
 - ✅ Suporte a variáveis de ambiente no sudo (SETENV)
 - ✅ Confirmação automática para operações via dashboard
 - ✅ Script de instalação atualizado com todas as configurações necessárias
-- ✅ Instalação automática do WP-CLI
+- ✅ Automação WordPress nativa (sem dependência do WP-CLI)
 - ✅ Criação automática de diretórios do sistema
 - ✅ Cópia automática de scripts necessários
 
