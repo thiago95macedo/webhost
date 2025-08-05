@@ -27,7 +27,7 @@ error() {
 }
 
 # Configurações padrão
-WEB_ROOT="/opt/webhost/sites"
+WEB_ROOT="/opt/webhost/sites/wordpress"
 NGINX_SITES_AVAILABLE="/etc/nginx/sites-available"
 NGINX_SITES_ENABLED="/etc/nginx/sites-enabled"
 MYSQL_ROOT_PASSWORD="root123"
@@ -591,7 +591,7 @@ delete_site() {
     log "Deletando arquivos..."
     rm -rf "$WEB_ROOT/$site_name"
     # Remover também do diretório antigo (compatibilidade)
-    rm -rf "/opt/webhost/sites/$site_name"
+    rm -rf "/opt/webhost/sites/wordpress/$site_name"
     
     # Deletar configuração Nginx
     log "Removendo configuração Nginx..."

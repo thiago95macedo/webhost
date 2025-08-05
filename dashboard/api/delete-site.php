@@ -27,7 +27,7 @@ try {
     }
     
     // Check if site exists
-    $webRoot = '/opt/webhost/sites';
+    $webRoot = '/opt/webhost/sites/wordpress';
     $siteDir = $webRoot . '/' . $siteName;
     
     if (!is_dir($siteDir)) {

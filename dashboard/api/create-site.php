@@ -32,7 +32,7 @@ try {
     }
     
     // Check if site already exists
-    $webRoot = '/opt/webhost/sites';
+    $webRoot = '/opt/webhost/sites/wordpress';
     $siteDir = $webRoot . '/' . $siteName;
     
     if (is_dir($siteDir)) {
@@ -71,7 +71,7 @@ try {
 }
 
 function getSiteInfo($siteName) {
-    $webRoot = '/opt/webhost/sites';
+    $webRoot = '/opt/webhost/sites/wordpress';
     $infoDir = '/opt/webhost/site-info';
     $nginxSitesEnabled = '/etc/nginx/sites-enabled';
     

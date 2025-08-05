@@ -36,7 +36,7 @@ try {
 }
 
 function getDetailedSiteInfo($siteName) {
-    $webRoot = '/opt/webhost/sites';
+    $webRoot = '/opt/webhost/sites/wordpress';
     $infoDir = '/opt/webhost/site-info';
     $nginxSitesEnabled = '/etc/nginx/sites-enabled';
     $nginxSitesAvailable = '/etc/nginx/sites-available';

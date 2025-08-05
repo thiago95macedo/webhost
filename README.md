@@ -160,7 +160,7 @@ O dashboard é configurado automaticamente durante a instalação do ambiente Wo
 
 ### Estrutura de Diretórios
 - **Web Root (setup-wordpress-dev.sh):** `/var/www/html`
-- **Sites (wp-multi.sh):** `/opt/webhost/sites/`
+- **Sites (wp-multi.sh):** `/opt/webhost/sites/wordpress/`
 - **Informações dos sites:** `/opt/webhost/site-info/`
 - **Logs Nginx:** `/var/log/nginx/`
 - **Backups:** `/root/backups/`
@@ -186,7 +186,8 @@ O dashboard é configurado automaticamente durante a instalação do ambiente Wo
 │   ├── api/                     # APIs do dashboard
 │   ├── assets/                  # CSS, JS e recursos
 │   └── nginx-config            # Configuração Nginx
-├── sites/                       # Sites criados pelo wp-multi.sh
+├── sites/                       # Diretório de sites
+│   └── wordpress/              # Sites criados pelo wp-multi.sh
 ├── site-info/                   # Informações dos sites
 └── README.md                    # Este arquivo
 ```

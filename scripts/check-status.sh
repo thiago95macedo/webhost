@@ -60,7 +60,7 @@ get_version() {
 # Função para verificar sites WordPress
 check_wordpress_sites() {
     local web_root="/var/www/html"
-    local multi_sites_root="/opt/webhost/sites"
+    local multi_sites_root="/opt/webhost/sites/wordpress"
     
     echo -e "\n${BLUE}=== SITES WORDPRESS ===${NC}"
     

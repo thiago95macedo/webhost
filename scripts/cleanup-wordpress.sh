@@ -62,6 +62,7 @@ log "Removendo diretórios e arquivos..."
 # Remover sites WordPress
 rm -rf /var/www/html/* 2>/dev/null || true
 rm -rf /var/www/html/.* 2>/dev/null || true
+rm -rf /opt/webhost/sites/wordpress/* 2>/dev/null || true
 
 # Remover configurações Nginx
 rm -rf /etc/nginx/sites-available/* 2>/dev/null || true

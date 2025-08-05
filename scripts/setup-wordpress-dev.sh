@@ -81,14 +81,14 @@ log "Permissões configuradas com sucesso!"
 
 # Criar diretórios necessários para o sistema
 log "Criando diretórios do sistema..."
-mkdir -p /opt/webhost/sites
+mkdir -p /opt/webhost/sites/wordpress
 mkdir -p /opt/webhost/site-info
 mkdir -p /opt/webhost/scripts
 
 # Configurar permissões dos diretórios criados
-chown -R :sudo /opt/webhost/sites
+chown -R :sudo /opt/webhost/sites/wordpress
 chown -R :sudo /opt/webhost/site-info
-chmod -R 775 /opt/webhost/sites
+chmod -R 775 /opt/webhost/sites/wordpress
 chmod -R 775 /opt/webhost/site-info
 
 log "Diretórios do sistema criados com sucesso!"
