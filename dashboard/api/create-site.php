@@ -32,15 +32,15 @@ try {
     }
     
     // Check if site already exists
-    $webRoot = '/home/weth/webhost/sites';
+    $webRoot = '/opt/webhost/sites';
     $siteDir = $webRoot . '/' . $siteName;
     
     if (is_dir($siteDir)) {
         throw new Exception('Site com este nome já existe');
     }
     
-    // Execute wp-multi.sh script with sudo privileges
-    $scriptPath = '/home/weth/webhost/scripts/wp-multi.sh';
+    // Execute wp-multi.sh script
+    $scriptPath = '/opt/webhost/scripts/wp-multi.sh';
     $command = "sudo $scriptPath create $siteName $domain 2>&1";
     
     $output = [];
@@ -71,8 +71,8 @@ try {
 }
 
 function getSiteInfo($siteName) {
-    $webRoot = '/home/weth/webhost/sites';
-    $infoDir = '/home/weth/webhost/site-info';
+    $webRoot = '/opt/webhost/sites';
+    $infoDir = '/opt/webhost/site-info';
     $nginxSitesEnabled = '/etc/nginx/sites-enabled';
     
     $siteDir = $webRoot . '/' . $siteName;

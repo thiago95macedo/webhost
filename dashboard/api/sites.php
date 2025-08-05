@@ -24,8 +24,8 @@ try {
 
 function getWordPressSites() {
     $sites = [];
-    $webRoot = '/home/weth/webhost/sites';
-    $infoDir = '/home/weth/webhost/site-info';
+    $webRoot = '/opt/webhost/sites';
+    $infoDir = '/opt/webhost/site-info';
     $nginxSitesEnabled = '/etc/nginx/sites-enabled';
     
     // Check if web root directory exists

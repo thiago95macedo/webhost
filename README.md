@@ -46,6 +46,17 @@ sudo mv scripts/wp-multi.sh /usr/local/bin/wp-multi
 sudo mv scripts/check-status.sh /usr/local/bin/wp-status
 ```
 
+### 3. Configuração de Permissões
+
+O script de instalação configura automaticamente as permissões corretas:
+
+- **Grupo proprietário:** `sudo` (permite acesso a todos os usuários com sudo)
+- **Permissões:** `775` (leitura, escrita e execução para proprietário e grupo)
+- **Herança de grupo:** Ativada (novos arquivos herdam o grupo sudo)
+- **Usuário atual:** Adicionado automaticamente aos grupos `sudo` e `www-data`
+
+**Importante:** Após a instalação, faça logout e login novamente para que as mudanças de grupo tenham efeito.
+
 ## 📖 Como Usar
 
 ### Script Principal (`setup-wordpress-dev.sh`)
@@ -124,6 +135,8 @@ Este script verifica o status completo do ambiente WordPress local.
 - ✅ Conectividade com internet
 - ✅ Logs recentes de erros
 
+
+
 ### Dashboard Web
 
 Este projeto inclui um dashboard web moderno para gerenciar sites WordPress locais.
@@ -147,8 +160,8 @@ O dashboard é configurado automaticamente durante a instalação do ambiente Wo
 
 ### Estrutura de Diretórios
 - **Web Root (setup-wordpress-dev.sh):** `/var/www/html`
-- **Sites (wp-multi.sh):** `/home/weth/webhost/sites/`
-- **Informações dos sites:** `/home/weth/webhost/site-info/`
+- **Sites (wp-multi.sh):** `/opt/webhost/sites/`
+- **Informações dos sites:** `/opt/webhost/site-info/`
 - **Logs Nginx:** `/var/log/nginx/`
 - **Backups:** `/root/backups/`
 
@@ -162,7 +175,7 @@ O dashboard é configurado automaticamente durante a instalação do ambiente Wo
 ## 📁 Estrutura de Arquivos
 
 ```
-/home/weth/webhost/
+/opt/webhost/
 ├── scripts/
 │   ├── setup-wordpress-dev.sh    # Script principal de instalação
 │   ├── wp-multi.sh              # Script de gerenciamento de múltiplos sites
@@ -186,6 +199,24 @@ O dashboard é configurado automaticamente durante a instalação do ambiente Wo
 ```bash
 sudo chown -R www-data:www-data /var/www/html/nome-do-site
 sudo chmod -R 755 /var/www/html/nome-do-site
+```
+
+**2. Problemas de permissão no /opt/webhost:**
+```bash
+# Verificar permissões atuais
+ls -la /opt/webhost
+
+# Corrigir permissões manualmente
+sudo chown -R :sudo /opt/webhost
+sudo chmod -R 775 /opt/webhost
+sudo chmod g+s /opt/webhost
+
+# Adicionar usuário ao grupo sudo
+sudo usermod -a -G sudo $USER
+sudo usermod -a -G www-data $USER
+
+# Verificar grupos do usuário
+groups $USER
 ```
 
 **2. Nginx não inicia:**
@@ -247,7 +278,7 @@ sudo ./scripts/wp-multi.sh logs teste
 ./scripts/check-status.sh
 
 # Ver informações do site
-cat /home/weth/webhost/site-info/teste-info.txt
+cat /opt/webhost/site-info/teste-info.txt
 ```
 
 ### Banco de Dados
@@ -280,6 +311,26 @@ SHOW TABLES;
 - Chaves de segurança únicas geradas automaticamente
 - URLs locais sem necessidade de configuração de DNS
 
+## 🎛️ Dashboard
+
+O dashboard está disponível em `http://localhost` e oferece uma interface web para gerenciar seus sites WordPress.
+
+### Funcionalidades do Dashboard
+- **Criar sites WordPress** com domínio personalizado
+- **Deletar sites** com confirmação automática
+- **Visualizar informações** dos sites criados
+- **Interface intuitiva** para gerenciamento
+
+### Permissões do Dashboard
+
+O usuário `www-data` tem permissões especiais configuradas em `/etc/sudoers.d/www-data`:
+
+```
+www-data ALL=(ALL) NOPASSWD: SETENV: /opt/webhost/scripts/wp-multi.sh
+```
+
+Isso permite que o dashboard execute comandos administrativos sem solicitar senha, incluindo a definição da variável de ambiente `AUTO_CONFIRM` para confirmação automática de operações.
+
 ## 📞 Suporte
 
 Para problemas ou dúvidas:
@@ -288,6 +339,17 @@ Para problemas ou dúvidas:
 3. Consulte a seção de troubleshooting
 
 ## 📝 Changelog
+
+### v1.2.0
+- ✅ Dashboard web funcional em http://localhost
+- ✅ Correção de permissões para deleção de sites via dashboard
+- ✅ Configuração automática de sudoers para www-data
+- ✅ Suporte a variáveis de ambiente no sudo (SETENV)
+- ✅ Confirmação automática para operações via dashboard
+- ✅ Script de instalação atualizado com todas as configurações necessárias
+- ✅ Instalação automática do WP-CLI
+- ✅ Criação automática de diretórios do sistema
+- ✅ Cópia automática de scripts necessários
 
 ### v1.1.0
 - ✅ URLs simplificadas usando localhost com portas automáticas

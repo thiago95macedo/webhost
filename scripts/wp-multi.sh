@@ -27,11 +27,11 @@ error() {
 }
 
 # Configurações padrão
-WEB_ROOT="/home/weth/webhost/sites"
+WEB_ROOT="/opt/webhost/sites"
 NGINX_SITES_AVAILABLE="/etc/nginx/sites-available"
 NGINX_SITES_ENABLED="/etc/nginx/sites-enabled"
 MYSQL_ROOT_PASSWORD="root123"
-INFO_DIR="/home/weth/webhost/site-info"
+INFO_DIR="/opt/webhost/site-info"
 
 # Configurações padrão do WordPress
 WP_ADMIN_USER="admin"
@@ -67,9 +67,39 @@ echo "  $0 create meu-site meusite.local"
 
 # Função para verificar se está rodando como root
 check_root() {
-    if [[ $EUID -ne 0 ]]; then
+    # Permitir execução sem root se AUTO_CONFIRM=1 (para uso via dashboard)
+    if [[ $EUID -ne 0 ]] && [ "$AUTO_CONFIRM" != "1" ]; then
         error "Este script deve ser executado como root (use sudo)"
     fi
+}
+
+# Função para verificar e configurar permissões
+check_permissions() {
+    log "Verificando permissões do diretório /opt/webhost..."
+    
+    # Verificar se o diretório existe
+    if [ ! -d "/opt/webhost" ]; then
+        error "Diretório /opt/webhost não existe. Execute o script setup-wordpress-dev.sh primeiro."
+    fi
+    
+    # Verificar se o grupo proprietário é sudo
+    local current_group=$(stat -c '%G' /opt/webhost)
+    if [ "$current_group" != "sudo" ]; then
+        warn "Grupo proprietário de /opt/webhost não é sudo. Configurando..."
+        chown -R :sudo /opt/webhost
+        chmod -R 775 /opt/webhost
+        chmod g+s /opt/webhost
+    fi
+    
+    # Verificar se o usuário atual está no grupo sudo
+    local current_user=${SUDO_USER:-$USER}
+    if ! groups $current_user | grep -q sudo; then
+        warn "Usuário $current_user não está no grupo sudo. Adicionando..."
+        usermod -a -G sudo $current_user
+        warn "Usuário $current_user adicionado ao grupo sudo. Faça logout e login novamente."
+    fi
+    
+    log "Permissões verificadas e configuradas."
 }
 
 # Função para gerar senha aleatória
@@ -81,7 +111,7 @@ generate_password() {
 find_available_port() {
     local port=9001
     while [ $port -le 10000 ]; do
-        if ! netstat -tuln | grep -q ":$port "; then
+        if ! ss -tuln | grep -q ":$port "; then
             echo $port
             return 0
         fi
@@ -367,10 +397,17 @@ create_site() {
     
     # Criar banco de dados
     log "Criando banco de dados..."
-    mysql -u root -p$MYSQL_ROOT_PASSWORD -e "CREATE DATABASE IF NOT EXISTS $db_name CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
-    mysql -u root -p$MYSQL_ROOT_PASSWORD -e "CREATE USER IF NOT EXISTS '$db_user'@'localhost' IDENTIFIED WITH mysql_native_password BY '$db_password';"
-    mysql -u root -p$MYSQL_ROOT_PASSWORD -e "GRANT ALL PRIVILEGES ON $db_name.* TO '$db_user'@'localhost';"
-    mysql -u root -p$MYSQL_ROOT_PASSWORD -e "FLUSH PRIVILEGES;"
+    if [[ $EUID -eq 0 ]]; then
+        mysql -e "CREATE DATABASE IF NOT EXISTS $db_name CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+        mysql -e "CREATE USER IF NOT EXISTS '$db_user'@'localhost' IDENTIFIED WITH mysql_native_password BY '$db_password';"
+        mysql -e "GRANT ALL PRIVILEGES ON $db_name.* TO '$db_user'@'localhost';"
+        mysql -e "FLUSH PRIVILEGES;"
+    else
+        sudo mysql -e "CREATE DATABASE IF NOT EXISTS $db_name CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+        sudo mysql -e "CREATE USER IF NOT EXISTS '$db_user'@'localhost' IDENTIFIED WITH mysql_native_password BY '$db_password';"
+        sudo mysql -e "GRANT ALL PRIVILEGES ON $db_name.* TO '$db_user'@'localhost';"
+        sudo mysql -e "FLUSH PRIVILEGES;"
+    fi
     
     # Criar diretório do site
     log "Criando diretório do site em: $WEB_ROOT/$site_name"
@@ -466,7 +503,8 @@ EOF
     
     # Criar diretório de informações se não existir
     mkdir -p "$INFO_DIR"
-    chown weth:weth "$INFO_DIR"
+    chown :sudo "$INFO_DIR"
+    chmod 775 "$INFO_DIR"
     
     # Salvar informações do site
     cat > "$INFO_DIR/$site_name-info.txt" << EOF
@@ -522,12 +560,16 @@ delete_site() {
         error "Site $site_name não existe!"
     fi
     
-    # Confirmar exclusão
-    read -p "Tem certeza que deseja deletar o site $site_name? (y/N): " -n 1 -r
-    echo
-    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-        log "Operação cancelada"
-        exit 0
+    # Confirmar exclusão (pular se AUTO_CONFIRM=1)
+    if [ "$AUTO_CONFIRM" != "1" ]; then
+        read -p "Tem certeza que deseja deletar o site $site_name? (y/N): " -n 1 -r
+        echo
+        if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+            log "Operação cancelada"
+            exit 0
+        fi
+    else
+        log "Confirmação automática ativada"
     fi
     
     # Deletar banco de dados (substituir hífens por underscores)
@@ -535,15 +577,21 @@ delete_site() {
     local db_user="${site_name//-/_}_user"
     
     log "Deletando banco de dados..."
-    mysql -u root -p$MYSQL_ROOT_PASSWORD -e "DROP DATABASE IF EXISTS $db_name;"
-    mysql -u root -p$MYSQL_ROOT_PASSWORD -e "DROP USER IF EXISTS '$db_user'@'localhost';"
-    mysql -u root -p$MYSQL_ROOT_PASSWORD -e "FLUSH PRIVILEGES;"
+    if [[ $EUID -eq 0 ]]; then
+        mysql -e "DROP DATABASE IF EXISTS $db_name;"
+        mysql -e "DROP USER IF EXISTS '$db_user'@'localhost';"
+        mysql -e "FLUSH PRIVILEGES;"
+    else
+        sudo mysql -e "DROP DATABASE IF EXISTS $db_name;"
+        sudo mysql -e "DROP USER IF EXISTS '$db_user'@'localhost';"
+        sudo mysql -e "FLUSH PRIVILEGES;"
+    fi
     
     # Deletar arquivos
     log "Deletando arquivos..."
     rm -rf "$WEB_ROOT/$site_name"
     # Remover também do diretório antigo (compatibilidade)
-    rm -rf "/home/weth/webhost/sites/$site_name"
+    rm -rf "/opt/webhost/sites/$site_name"
     
     # Deletar configuração Nginx
     log "Removendo configuração Nginx..."
@@ -601,7 +649,7 @@ list_sites() {
 # Função para fazer backup
 backup_site() {
     local site_name=$1
-    local backup_dir="/home/weth/webhost/backups"
+    local backup_dir="/opt/webhost/backups"
     local timestamp=$(date +%Y%m%d_%H%M%S)
     local backup_file="$backup_dir/${site_name}_${timestamp}.tar.gz"
     
@@ -626,7 +674,11 @@ backup_site() {
     local db_backup_file="$backup_dir/${site_name}_db_${timestamp}.sql"
     
     log "Backup do banco de dados..."
-    mysqldump -u root -p$MYSQL_ROOT_PASSWORD "$db_name" > "$db_backup_file"
+    if [[ $EUID -eq 0 ]]; then
+        mysqldump "$db_name" > "$db_backup_file"
+    else
+        sudo mysqldump "$db_name" > "$db_backup_file"
+    fi
     
     log "Backup concluído!"
     log "Arquivos: $backup_file"
@@ -703,6 +755,9 @@ show_logs() {
         echo ""
     fi
 }
+
+# Verificar permissões antes de executar qualquer comando
+check_permissions
 
 # Main script
 case "$1" in

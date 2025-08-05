@@ -27,7 +27,7 @@ try {
     }
     
     // Check if site exists
-    $webRoot = '/home/weth/webhost/sites';
+    $webRoot = '/opt/webhost/sites';
     $siteDir = $webRoot . '/' . $siteName;
     
     if (!is_dir($siteDir)) {
@@ -35,8 +35,8 @@ try {
     }
     
     // Execute wp-multi.sh script to delete site
-    $scriptPath = '/home/weth/webhost/scripts/wp-multi.sh';
-    $command = "echo 'y' | sudo $scriptPath delete $siteName 2>&1";
+    $scriptPath = '/opt/webhost/scripts/wp-multi.sh';
+    $command = "sudo AUTO_CONFIRM=1 $scriptPath delete $siteName 2>&1";
     
     $output = [];
     $returnCode = 0;

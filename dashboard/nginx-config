@@ -2,7 +2,7 @@ server {
     listen 80;
     server_name localhost 127.0.0.1;
     
-    root /home/weth/webhost/dashboard;
+    root /opt/webhost/dashboard;
     index index.php index.html;
     
     # Security headers
@@ -52,7 +52,7 @@ server {
         try_files $uri $uri/ /index.php?$query_string;
     }
     
-    # Main location
+    # Main location - apenas para o dashboard
     location / {
         try_files $uri $uri/ /index.php?$query_string;
     }

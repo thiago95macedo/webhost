@@ -42,6 +42,57 @@ if [[ $EUID -ne 0 ]]; then
    error "Este script deve ser executado como root (use sudo)"
 fi
 
+# Obter o usuário atual que executou o script
+CURRENT_USER=${SUDO_USER:-$USER}
+log "Usuário atual: $CURRENT_USER"
+
+# Configurar permissões do diretório /opt/webhost
+log "Configurando permissões do diretório /opt/webhost..."
+
+# Criar diretório /opt/webhost se não existir
+mkdir -p /opt/webhost
+
+# Definir grupo proprietário como sudo
+log "Definindo grupo proprietário como sudo..."
+chown -R :sudo /opt/webhost
+
+# Configurar permissões para que o grupo tenha leitura, escrita e execução
+log "Configurando permissões 775..."
+chmod -R 775 /opt/webhost
+
+# Garantir que novos arquivos e pastas herdem o grupo sudo automaticamente
+log "Configurando herança de grupo..."
+chmod g+s /opt/webhost
+
+# Adicionar usuário atual ao grupo sudo se não estiver
+if ! groups $CURRENT_USER | grep -q sudo; then
+    log "Adicionando usuário $CURRENT_USER ao grupo sudo..."
+    usermod -a -G sudo $CURRENT_USER
+    warn "Usuário $CURRENT_USER adicionado ao grupo sudo. Faça logout e login novamente para aplicar as mudanças."
+fi
+
+# Verificar se o usuário está no grupo www-data
+if ! groups $CURRENT_USER | grep -q www-data; then
+    log "Adicionando usuário $CURRENT_USER ao grupo www-data..."
+    usermod -a -G www-data $CURRENT_USER
+fi
+
+log "Permissões configuradas com sucesso!"
+
+# Criar diretórios necessários para o sistema
+log "Criando diretórios do sistema..."
+mkdir -p /opt/webhost/sites
+mkdir -p /opt/webhost/site-info
+mkdir -p /opt/webhost/scripts
+
+# Configurar permissões dos diretórios criados
+chown -R :sudo /opt/webhost/sites
+chown -R :sudo /opt/webhost/site-info
+chmod -R 775 /opt/webhost/sites
+chmod -R 775 /opt/webhost/site-info
+
+log "Diretórios do sistema criados com sucesso!"
+
 log "Iniciando configuração do ambiente WordPress local..."
 
 # Atualizar sistema
@@ -223,6 +274,19 @@ systemctl enable nginx
 systemctl enable mysql
 systemctl enable php8.1-fpm
 
+# Instalar WP-CLI
+log "Instalando WP-CLI..."
+curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
+chmod +x wp-cli.phar
+mv wp-cli.phar /usr/local/bin/wp
+
+# Verificar instalação do WP-CLI
+if wp --version > /dev/null 2>&1; then
+    log "WP-CLI instalado com sucesso!"
+else
+    warn "WP-CLI não foi instalado corretamente"
+fi
+
 # Configurar firewall (opcional)
 log "Configurando firewall..."
 ufw allow 'Nginx Full'
@@ -232,34 +296,76 @@ ufw --force enable
 # Configurar permissões sudo para www-data (para o dashboard)
 log "Configurando permissões sudo para www-data..."
 cat > /etc/sudoers.d/www-data << 'EOF'
-www-data ALL=(ALL) NOPASSWD: /home/weth/webhost/scripts/wp-multi.sh
-www-data ALL=(ALL) NOPASSWD: /home/weth/webhost/scripts/check-status.sh
-www-data ALL=(ALL) NOPASSWD: /home/weth/webhost/scripts/cleanup-wordpress.sh
+www-data ALL=(ALL) NOPASSWD: SETENV: /opt/webhost/scripts/wp-multi.sh
+www-data ALL=(ALL) NOPASSWD: /opt/webhost/scripts/check-status.sh
+www-data ALL=(ALL) NOPASSWD: /opt/webhost/scripts/cleanup-wordpress.sh
+www-data ALL=(ALL) NOPASSWD: /usr/bin/mysql
+www-data ALL=(ALL) NOPASSWD: /usr/bin/mysqldump
+www-data ALL=(ALL) NOPASSWD: /usr/sbin/nginx
+www-data ALL=(ALL) NOPASSWD: /bin/systemctl reload nginx
+www-data ALL=(ALL) NOPASSWD: /bin/systemctl restart nginx
 EOF
 chmod 440 /etc/sudoers.d/www-data
 
 # Configurar dashboard (se existir)
-if [ -d "/home/weth/webhost/dashboard" ]; then
+if [ -d "/opt/webhost/dashboard" ]; then
     log "Configurando dashboard..."
     
     # Configurar permissões do diretório pai (necessário para Nginx acessar)
-    chmod 755 /home/weth/
+    chmod 775 /opt/webhost/
     
-    # Configurar permissões do dashboard
-    chmod -R 755 /home/weth/webhost/dashboard/
+    # Configurar permissões do dashboard mantendo grupo sudo
+    chmod -R 775 /opt/webhost/dashboard/
+    chown -R :sudo /opt/webhost/dashboard/
     
     # Configurar Nginx para o dashboard no localhost
-    if [ -f "/home/weth/webhost/dashboard/nginx-config" ]; then
-        cp /home/weth/webhost/dashboard/nginx-config /etc/nginx/sites-available/dashboard
-        ln -sf /etc/nginx/sites-available/dashboard /etc/nginx/sites-enabled/
+    if [ -f "/opt/webhost/dashboard/nginx-config" ]; then
+        log "Copiando configuração Nginx do dashboard..."
+        cp /opt/webhost/dashboard/nginx-config /etc/nginx/sites-available/dashboard
+        
+        log "Removendo configuração padrão do Nginx..."
         rm -f /etc/nginx/sites-enabled/default
+        
+        log "Habilitando dashboard no Nginx..."
+        ln -sf /etc/nginx/sites-available/dashboard /etc/nginx/sites-enabled/
+        
+        log "Testando configuração Nginx..."
+        nginx -t
+        
+        log "Recarregando Nginx..."
+        systemctl reload nginx
+        
         log "Dashboard configurado em http://localhost"
     else
         warn "Arquivo nginx-config não encontrado no dashboard"
     fi
 else
-    warn "Dashboard não encontrado em /home/weth/webhost/dashboard"
+    warn "Dashboard não encontrado em /opt/webhost/dashboard"
 fi
+
+# Copiar scripts necessários (se existirem no diretório atual)
+log "Copiando scripts do sistema..."
+if [ -f "./scripts/wp-multi.sh" ]; then
+    cp ./scripts/wp-multi.sh /opt/webhost/scripts/
+    chmod +x /opt/webhost/scripts/wp-multi.sh
+    log "Script wp-multi.sh copiado"
+fi
+
+if [ -f "./scripts/check-status.sh" ]; then
+    cp ./scripts/check-status.sh /opt/webhost/scripts/
+    chmod +x /opt/webhost/scripts/check-status.sh
+    log "Script check-status.sh copiado"
+fi
+
+if [ -f "./scripts/cleanup-wordpress.sh" ]; then
+    cp ./scripts/cleanup-wordpress.sh /opt/webhost/scripts/
+    chmod +x /opt/webhost/scripts/cleanup-wordpress.sh
+    log "Script cleanup-wordpress.sh copiado"
+fi
+
+# Configurar permissões dos scripts
+chown -R :sudo /opt/webhost/scripts/
+chmod -R 775 /opt/webhost/scripts/
 
 # Criar arquivo de informações
 log "Criando arquivo de informações..."
@@ -304,7 +410,7 @@ EOF
 log "Configuração concluída com sucesso!"
 
 # Informações sobre o dashboard
-if [ -d "/home/weth/webhost/dashboard" ]; then
+if [ -d "/opt/webhost/dashboard" ]; then
     log "🎛️  Dashboard disponível em http://localhost"
     log "📊 Use o dashboard para gerenciar sites WordPress locais"
 else
@@ -320,7 +426,7 @@ echo -e "${BLUE}AMBIENTE WORDPRESS LOCAL CONFIGURADO${NC}"
 echo -e "${BLUE}===========================================${NC}"
 
 # Informações sobre o dashboard
-if [ -d "/home/weth/webhost/dashboard" ]; then
+if [ -d "/opt/webhost/dashboard" ]; then
     echo -e "${GREEN}🎛️  Dashboard: http://localhost${NC}"
     echo -e "${YELLOW}📊 Use o dashboard para gerenciar sites WordPress${NC}"
 else
