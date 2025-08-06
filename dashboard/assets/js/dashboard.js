@@ -547,7 +547,7 @@ function showSiteInfo(siteName) {
                         </div>
                         
                         <div class="text-center mt-3">
-                            <a href="${site.url}" target="_blank" class="btn btn-primary">
+                            <a href="${site.url}" target="_blank" class="btn btn-info">
                                 <i class="fas fa-external-link-alt"></i>
                                 Acessar Site
                             </a>
