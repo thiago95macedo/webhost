@@ -382,8 +382,8 @@ create_site() {
     
     # Criar diretório de sites se não existir
     mkdir -p "$WEB_ROOT"
-    chown www-data:www-data "$WEB_ROOT"
-    chmod 755 "$WEB_ROOT"
+    chown www-data:sudo "$WEB_ROOT"
+    chmod 775 "$WEB_ROOT"
     
     # Verificar se o site já existe
     if [ -d "$WEB_ROOT/$site_name" ]; then
@@ -415,13 +415,13 @@ create_site() {
     
     # Configurar permissões
     log "Configurando permissões..."
-    chown -R www-data:www-data "$WEB_ROOT/$site_name"
-    chmod -R 755 "$WEB_ROOT/$site_name"
+    chown -R www-data:sudo "$WEB_ROOT/$site_name"
+    chmod -R 775 "$WEB_ROOT/$site_name"
     
     # Garantir que o diretório pai tenha permissões corretas para o Nginx
     local parent_dir=$(dirname "$WEB_ROOT")
     if [ -d "$parent_dir" ]; then
-        chmod 755 "$parent_dir"
+        chmod 775 "$parent_dir"
         log "Permissões do diretório pai configuradas"
     fi
     

@@ -118,7 +118,7 @@ usermod -a -G www-data www-data 2>/dev/null || true
 
 # Criar diretório /var/www se não existir
 mkdir -p /var/www
-chown www-data:www-data /var/www
+    chown www-data:sudo /var/www
 
 # Instalar Nginx
 log "Instalando Nginx..."
@@ -170,8 +170,8 @@ cp -r wordpress/* $SITE_PATH/
 
 # Configurar permissões
 log "Configurando permissões..."
-chown -R www-data:www-data $SITE_PATH
-chmod -R 755 $SITE_PATH
+chown -R www-data:sudo $SITE_PATH
+chmod -R 775 $SITE_PATH
 
 # Configurar permissões para diretórios específicos (se existirem)
 [ -d "$SITE_PATH/wp-content/uploads" ] && chmod -R 775 $SITE_PATH/wp-content/uploads

@@ -322,8 +322,8 @@ date_default_timezone_set('America/Sao_Paulo');
 EOF
 
     # Configurar permissões
-    chown -R www-data:www-data "$site_path"
-    chmod -R 755 "$site_path"
+    chown -R www-data:sudo "$site_path"
+    chmod -R 775 "$site_path"
 
     log "Estrutura PHP criada com sucesso!"
 }
@@ -345,8 +345,8 @@ create_site() {
     
     # Criar diretório de sites se não existir
     mkdir -p "$WEB_ROOT"
-    chown www-data:www-data "$WEB_ROOT"
-    chmod 755 "$WEB_ROOT"
+    chown www-data:sudo "$WEB_ROOT"
+    chmod 775 "$WEB_ROOT"
     
     # Verificar se o site já existe
     if [ -d "$WEB_ROOT/$site_name" ]; then
@@ -359,8 +359,8 @@ create_site() {
     
     # Configurar permissões
     log "Configurando permissões..."
-    chown -R www-data:www-data "$WEB_ROOT/$site_name"
-    chmod -R 755 "$WEB_ROOT/$site_name"
+    chown -R www-data:sudo "$WEB_ROOT/$site_name"
+    chmod -R 775 "$WEB_ROOT/$site_name"
     
     # Criar estrutura PHP
     create_php_structure "$site_name" "$port"

@@ -290,8 +290,8 @@ create_html_structure() {
 EOF
 
     # Configurar permissões
-    chown -R www-data:www-data "$site_path"
-    chmod -R 755 "$site_path"
+    chown -R www-data:sudo "$site_path"
+    chmod -R 775 "$site_path"
 
     log "Estrutura HTML criada com sucesso!"
 }
