@@ -192,7 +192,7 @@ class WordPressDashboard {
                 </div>
                 
                 <div class="site-actions">
-                    <a href="${site.url}" target="_blank" class="btn btn-primary">
+                    <a href="${site.url}" target="_blank" class="btn btn-info">
                         <i class="fas fa-external-link-alt"></i>
                         Site
                     </a>
@@ -232,7 +232,7 @@ class WordPressDashboard {
                 </div>
                 
                 <div class="site-actions">
-                    <a href="${site.url}" target="_blank" class="btn btn-primary">
+                    <a href="${site.url}" target="_blank" class="btn btn-info">
                         <i class="fas fa-external-link-alt"></i>
                         Site
                     </a>
@@ -264,7 +264,7 @@ class WordPressDashboard {
                 </div>
                 
                 <div class="site-actions">
-                    <a href="${site.url}" target="_blank" class="btn btn-primary">
+                    <a href="${site.url}" target="_blank" class="btn btn-info">
                         <i class="fas fa-external-link-alt"></i>
                         Site
                     </a>
