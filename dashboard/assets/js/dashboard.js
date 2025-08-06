@@ -8,6 +8,7 @@ class WordPressDashboard {
         this.loadSystemInfo();
         this.loadWordPressSites();
         this.loadPhpSites();
+        this.loadHtmlSites();
         this.setupEventListeners();
     }
 
@@ -93,6 +94,22 @@ class WordPressDashboard {
         }
     }
 
+    async loadHtmlSites() {
+        try {
+            const response = await fetch('api/html-sites.php');
+            const data = await response.json();
+            
+            if (data.success) {
+                this.updateHtmlSitesContainer(data.sites);
+            } else {
+                this.showError('Erro ao carregar sites HTML: ' + data.message);
+            }
+        } catch (error) {
+            console.error('Erro ao carregar sites HTML:', error);
+            this.showError('Erro de conexão ao carregar sites HTML');
+        }
+    }
+
     updateWordPressSitesContainer(sites) {
         const container = document.getElementById('wordpress-sites-container');
         
@@ -104,7 +121,7 @@ class WordPressDashboard {
                     <p class="text-muted">Crie seu primeiro site WordPress para começar</p>
                     <button class="btn btn-success" onclick="createNewWordPressSite()">
                         <i class="fas fa-plus"></i>
-                        Criar Primeiro Site WordPress
+                        Primeiro Site WordPress
                     </button>
                 </div>
             `;
@@ -125,14 +142,35 @@ class WordPressDashboard {
                     <p class="text-muted">Crie seu primeiro site PHP para começar</p>
                     <button class="btn btn-primary" onclick="createNewPhpSite()">
                         <i class="fas fa-plus"></i>
-                        Criar Primeiro Site PHP
+                        Primeiro Site PHP
                     </button>
                 </div>
             `;
             return;
         }
 
-        container.innerHTML = sites.map(site => this.createSiteCard(site)).join('');
+        container.innerHTML = sites.map(site => this.createPhpSiteCard(site)).join('');
+    }
+
+    updateHtmlSitesContainer(sites) {
+        const container = document.getElementById('html-sites-container');
+        
+        if (!sites || sites.length === 0) {
+            container.innerHTML = `
+                <div class="text-center" style="grid-column: 1 / -1; padding: 3rem;">
+                    <i class="fab fa-html5" style="font-size: 3rem; color: var(--medium-gray); margin-bottom: 1rem;"></i>
+                    <h3>Nenhum site HTML encontrado</h3>
+                    <p class="text-muted">Crie seu primeiro site HTML para começar</p>
+                    <button class="btn btn-warning" onclick="createNewHtmlSite()">
+                        <i class="fas fa-plus"></i>
+                        Primeiro Site HTML
+                    </button>
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = sites.map(site => this.createHtmlSiteCard(site)).join('');
     }
 
     createSiteCard(site) {
@@ -167,6 +205,70 @@ class WordPressDashboard {
                         Info
                     </button>
                     <button class="btn btn-danger" onclick="deleteSite('${site.name}')">
+                        <i class="fas fa-trash"></i>
+                        Del
+                    </button>
+                </div>
+            </div>
+        `;
+    }
+
+    createPhpSiteCard(site) {
+        const statusClass = site.active ? 'status-active' : 'status-inactive';
+        const statusText = site.active ? 'Ativo' : 'Inativo';
+        
+        return `
+            <div class="site-card">
+                <div class="site-header">
+                    <div class="site-name">${site.name}</div>
+                    <span class="site-status ${statusClass}">${statusText}</span>
+                </div>
+                
+                <div class="site-info">
+                    <div class="site-info-item">
+                        <span class="site-info-label">URL:</span>
+                        <span class="site-info-value">${site.url}</span>
+                    </div>
+                </div>
+                
+                <div class="site-actions">
+                    <a href="${site.url}" target="_blank" class="btn btn-primary">
+                        <i class="fas fa-external-link-alt"></i>
+                        Site
+                    </a>
+                    <button class="btn btn-danger" onclick="deletePhpSite('${site.name}')">
+                        <i class="fas fa-trash"></i>
+                        Del
+                    </button>
+                </div>
+            </div>
+        `;
+    }
+
+    createHtmlSiteCard(site) {
+        const statusClass = site.active ? 'status-active' : 'status-inactive';
+        const statusText = site.active ? 'Ativo' : 'Inativo';
+        
+        return `
+            <div class="site-card">
+                <div class="site-header">
+                    <div class="site-name">${site.name}</div>
+                    <span class="site-status ${statusClass}">${statusText}</span>
+                </div>
+                
+                <div class="site-info">
+                    <div class="site-info-item">
+                        <span class="site-info-label">URL:</span>
+                        <span class="site-info-value">${site.url}</span>
+                    </div>
+                </div>
+                
+                <div class="site-actions">
+                    <a href="${site.url}" target="_blank" class="btn btn-primary">
+                        <i class="fas fa-external-link-alt"></i>
+                        Site
+                    </a>
+                    <button class="btn btn-danger" onclick="deleteHtmlSite('${site.name}')">
                         <i class="fas fa-trash"></i>
                         Del
                     </button>
@@ -219,6 +321,7 @@ function refreshData() {
     dashboard.loadSystemInfo();
     dashboard.loadWordPressSites();
     dashboard.loadPhpSites();
+    dashboard.loadHtmlSites();
     
     // Show refresh feedback
     const btn = event.target.closest('.btn');
@@ -280,6 +383,31 @@ function createNewPhpSite() {
     `);
     
     document.getElementById('create-php-site-form').addEventListener('submit', handleCreatePhpSite);
+}
+
+function createNewHtmlSite() {
+    dashboard.showModal('Criar Novo Site HTML', `
+        <form id="create-html-site-form">
+            <div class="mb-2">
+                <label for="site-name">Nome do Projeto:</label>
+                <input type="text" id="site-name" name="site-name" required 
+                       placeholder="ex: meu-projeto" class="form-control">
+            </div>
+            <div class="mb-3">
+                <label for="site-domain">Domínio (opcional):</label>
+                <input type="text" id="site-domain" name="site-domain" 
+                       placeholder="localhost" class="form-control">
+            </div>
+            <div class="text-center">
+                <button type="submit" class="btn btn-warning">
+                    <i class="fab fa-html5"></i>
+                    Criar Site HTML
+                </button>
+            </div>
+        </form>
+    `);
+    
+    document.getElementById('create-html-site-form').addEventListener('submit', handleCreateHtmlSite);
 }
 
 async function handleCreateWordPressSite(event) {
@@ -439,6 +567,58 @@ function showSiteInfo(siteName) {
         });
 }
 
+async function handleCreateHtmlSite(event) {
+    event.preventDefault();
+    
+    const formData = new FormData(event.target);
+    const siteName = formData.get('site-name');
+    const domain = formData.get('site-domain') || 'localhost';
+    
+    // Mostrar animação de loading
+    const submitButton = event.target.querySelector('button[type="submit"]');
+    const originalButtonContent = submitButton.innerHTML;
+    
+    submitButton.innerHTML = `
+        <i class="fas fa-spinner fa-spin"></i>
+        Criando Site HTML...
+    `;
+    submitButton.disabled = true;
+    
+    try {
+        const response = await fetch('api/create-html-site.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ name: siteName, domain: domain })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            closeModal();
+            dashboard.showModal('Sucesso', `
+                <div class="text-center">
+                    <i class="fas fa-check-circle" style="font-size: 3rem; color: var(--success); margin-bottom: 1rem;"></i>
+                    <h3>Site HTML criado com sucesso!</h3>
+                    <p><strong>URL:</strong> ${data.site.url}</p>
+                    <p><strong>Document Root:</strong> ${data.site.directory}</p>
+                    <p><strong>Porta:</strong> ${data.site.port}</p>
+                </div>
+            `);
+            dashboard.loadHtmlSites();
+        } else {
+            dashboard.showError(data.message);
+        }
+    } catch (error) {
+        dashboard.showError('Erro ao criar site HTML: ' + error.message);
+    } finally {
+        // Restaurar botão original
+        submitButton.innerHTML = originalButtonContent;
+        submitButton.disabled = false;
+    }
+}
+
 function deleteSite(siteName) {
     if (confirm(`Tem certeza que deseja deletar o site "${siteName}"? Esta ação não pode ser desfeita.`)) {
         fetch('api/delete-site.php', {
@@ -465,6 +645,66 @@ function deleteSite(siteName) {
         })
         .catch(error => {
             dashboard.showError('Erro ao deletar site');
+        });
+    }
+}
+
+function deletePhpSite(siteName) {
+    if (confirm(`Tem certeza que deseja deletar o site PHP "${siteName}"? Esta ação não pode ser desfeita.`)) {
+        fetch('api/delete-php-site.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ name: siteName })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                dashboard.showModal('Sucesso', `
+                    <div class="text-center">
+                        <i class="fas fa-check-circle" style="font-size: 3rem; color: var(--success); margin-bottom: 1rem;"></i>
+                        <h3>Site PHP deletado com sucesso!</h3>
+                        <p>O site "${siteName}" foi removido do sistema.</p>
+                    </div>
+                `);
+                dashboard.loadPhpSites();
+            } else {
+                dashboard.showError(data.message);
+            }
+        })
+        .catch(error => {
+            dashboard.showError('Erro ao deletar site PHP');
+        });
+    }
+}
+
+function deleteHtmlSite(siteName) {
+    if (confirm(`Tem certeza que deseja deletar o site HTML "${siteName}"? Esta ação não pode ser desfeita.`)) {
+        fetch('api/delete-html-site.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ name: siteName })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                dashboard.showModal('Sucesso', `
+                    <div class="text-center">
+                        <i class="fas fa-check-circle" style="font-size: 3rem; color: var(--success); margin-bottom: 1rem;"></i>
+                        <h3>Site HTML deletado com sucesso!</h3>
+                        <p>O site "${siteName}" foi removido do sistema.</p>
+                    </div>
+                `);
+                dashboard.loadHtmlSites();
+            } else {
+                dashboard.showError(data.message);
+            }
+        })
+        .catch(error => {
+            dashboard.showError('Erro ao deletar site HTML');
         });
     }
 }

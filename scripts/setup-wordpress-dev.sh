@@ -82,6 +82,8 @@ log "Permissões configuradas com sucesso!"
 # Criar diretórios necessários para o sistema
 log "Criando diretórios do sistema..."
 mkdir -p /opt/webhost/sites/wordpress
+mkdir -p /opt/webhost/sites/php
+mkdir -p /opt/webhost/sites/html
 mkdir -p /opt/webhost/site-info
 mkdir -p /opt/webhost/scripts
 
@@ -298,6 +300,7 @@ log "Configurando permissões sudo para www-data..."
 cat > /etc/sudoers.d/www-data << 'EOF'
 www-data ALL=(ALL) NOPASSWD: SETENV: /opt/webhost/scripts/wp-multi.sh
 www-data ALL=(ALL) NOPASSWD: SETENV: /opt/webhost/scripts/php-multi.sh
+www-data ALL=(ALL) NOPASSWD: SETENV: /opt/webhost/scripts/html-multi.sh
 www-data ALL=(ALL) NOPASSWD: /opt/webhost/scripts/check-status.sh
 www-data ALL=(ALL) NOPASSWD: /opt/webhost/scripts/cleanup-wordpress.sh
 www-data ALL=(ALL) NOPASSWD: /usr/bin/mysql
@@ -362,6 +365,18 @@ if [ -f "./scripts/cleanup-wordpress.sh" ]; then
     cp ./scripts/cleanup-wordpress.sh /opt/webhost/scripts/
     chmod +x /opt/webhost/scripts/cleanup-wordpress.sh
     log "Script cleanup-wordpress.sh copiado"
+fi
+
+if [ -f "./scripts/php-multi.sh" ]; then
+    cp ./scripts/php-multi.sh /opt/webhost/scripts/
+    chmod +x /opt/webhost/scripts/php-multi.sh
+    log "Script php-multi.sh copiado"
+fi
+
+if [ -f "./scripts/html-multi.sh" ]; then
+    cp ./scripts/html-multi.sh /opt/webhost/scripts/
+    chmod +x /opt/webhost/scripts/html-multi.sh
+    log "Script html-multi.sh copiado"
 fi
 
 # Configurar permissões dos scripts

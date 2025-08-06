@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WordPress Development Dashboard</title>
+    <title>Dashboard - Ambiente de Desenvolvimento Web</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -14,8 +14,8 @@
         <header class="dashboard-header">
             <div class="header-content">
                 <div class="logo">
-                    <img src="images/logo.png" alt="WordPress Dev Dashboard" class="logo-image" style="width: 32px; height: 32px; object-fit: contain;">
-                    <h1>WordPress Dev Dashboard</h1>
+                    <i class="fas fa-server" style="font-size: 32px; color: white;"></i>
+                    <h1>Dashboard - Ambiente de Desenvolvimento Web</h1>
                 </div>
                 <div class="header-actions">
                     <button class="btn btn-refresh" onclick="refreshData()">
@@ -164,6 +164,26 @@
                     <div class="loading-spinner">
                         <i class="fas fa-spinner fa-spin"></i>
                         <p>Carregando sites PHP...</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- HTML Sites -->
+            <section class="dashboard-section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fab fa-html5"></i>
+                        Sites HTML
+                    </h2>
+                    <button class="btn btn-warning" onclick="createNewHtmlSite()">
+                        <i class="fas fa-plus"></i>
+                        Novo Site HTML
+                    </button>
+                </div>
+                <div class="sites-container" id="html-sites-container">
+                    <div class="loading-spinner">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <p>Carregando sites HTML...</p>
                     </div>
                 </div>
             </section>

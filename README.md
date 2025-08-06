@@ -1,483 +1,317 @@
-# Ambiente WordPress Local - Scripts de Automação
+# 🚀 Ambiente de Desenvolvimento Web Multi-Tecnologia
 
-Este projeto contém scripts para automatizar a criação e gerenciamento de ambientes WordPress locais com Nginx e MySQL.
+Um ambiente completo de desenvolvimento web que suporta **WordPress**, **PHP** e **HTML** com dashboard visual integrado.
 
-## 📋 Pré-requisitos
+## 📋 Índice
 
-- Sistema operacional Ubuntu/Debian
-- Acesso root (sudo)
+- [Visão Geral](#visão-geral)
+- [Funcionalidades](#funcionalidades)
+- [Instalação](#instalação)
+- [Estrutura de Diretórios](#estrutura-de-diretórios)
+- [Dashboard](#dashboard)
+- [Tipos de Sites](#tipos-de-sites)
+- [Automação WordPress](#automação-wordpress)
+- [Configuração de Permissões](#configuração-de-permissões)
+- [Troubleshooting](#troubleshooting)
+- [Changelog](#changelog)
+
+## 🎯 Visão Geral
+
+Este projeto oferece um ambiente de desenvolvimento web completo com:
+
+- **Dashboard visual** para gerenciar todos os sites
+- **Suporte multi-tecnologia**: WordPress, PHP e HTML
+- **Configuração automática** de Nginx e MySQL
+- **Sistema de permissões** otimizado
+- **Automação nativa** sem dependências externas
+
+## ✨ Funcionalidades
+
+### 🎛️ Dashboard Integrado
+- Interface web moderna e responsiva
+- Gerenciamento visual de todos os sites
+- Criação e exclusão de sites com um clique
+- Monitoramento de status em tempo real
+- Informações detalhadas de cada site
+
+### 🌐 Suporte Multi-Tecnologia
+- **WordPress**: Sites completos com CMS
+- **PHP**: Sites com processamento server-side
+- **HTML**: Sites estáticos de alta performance
+
+### 🔧 Automação Completa
+- Instalação automática do WordPress
+- Configuração de banco de dados
+- Configuração de Nginx
+- Atribuição automática de portas
+- Gerenciamento de permissões
+
+## 🛠️ Instalação
+
+### Pré-requisitos
+- Ubuntu/Debian (ou similar)
+- Acesso root/sudo
 - Conexão com internet
-- Mínimo 2GB RAM livre
-- 5GB espaço em disco livre
 
-## 🚀 Instalação Inicial
-
-### 1. Configuração do Ambiente Base
-
-Execute o script principal para configurar o ambiente WordPress:
-
+### Instalação Automática
 ```bash
-# Dar permissão de execução
-chmod +x scripts/setup-wordpress-dev.sh
+# Clone o repositório
+git clone <repository-url>
+cd webhost
 
-# Executar como root
-sudo ./scripts/setup-wordpress-dev.sh
+# Execute o script de instalação
+sudo bash scripts/setup-wordpress-dev.sh
 ```
 
-Este script irá:
-- ✅ Instalar e configurar Nginx
-- ✅ Instalar e configurar MySQL
-- ✅ Instalar PHP 8.1 e extensões necessárias
-- ✅ Baixar e configurar WordPress
-- ✅ Configurar virtual hosts
-- ✅ Criar banco de dados
-- ✅ Configurar permissões
-- ✅ Configurar firewall
-- ✅ Gerar arquivo de informações
+O script irá:
+- Instalar todas as dependências
+- Configurar Nginx, MySQL e PHP
+- Criar estrutura de diretórios
+- Configurar permissões
+- Instalar o dashboard
+- Configurar sudoers para automação
 
-### 2. Configuração dos Scripts
-
-```bash
-# Dar permissão de execução a todos os scripts
-chmod +x scripts/*.sh
-
-# Mover para um local no PATH (opcional)
-sudo mv scripts/wp-multi.sh /usr/local/bin/wp-multi
-sudo mv scripts/check-status.sh /usr/local/bin/wp-status
-```
-
-### 3. Configuração de Permissões
-
-O script de instalação configura automaticamente as permissões corretas:
-
-- **Grupo proprietário:** `sudo` (permite acesso a todos os usuários com sudo)
-- **Permissões:** `775` (leitura, escrita e execução para proprietário e grupo)
-- **Herança de grupo:** Ativada (novos arquivos herdam o grupo sudo)
-- **Usuário atual:** Adicionado automaticamente aos grupos `sudo` e `www-data`
-
-**Importante:** Após a instalação, faça logout e login novamente para que as mudanças de grupo tenham efeito.
-
-## 📖 Como Usar
-
-### Script Principal (`setup-wordpress-dev.sh`)
-
-Este script configura o ambiente base com um site WordPress padrão.
-
-**Execução:**
-```bash
-sudo ./scripts/setup-wordpress-dev.sh
-```
-
-**Após a execução:**
-1. Acesse `http://localhost` no navegador para o dashboard
-2. Para sites WordPress individuais, use as URLs específicas
-3. Configure o título do site e credenciais de administrador
-
-**Nota:** Sites criados com `wp-multi.sh` usam URLs como `http://localhost:9001`, `http://localhost:9002`, etc.
-
-### Script de Múltiplos Sites (`wp-multi.sh`)
-
-Este script permite gerenciar múltiplos sites WordPress locais usando localhost com portas automáticas.
-
-#### Comandos Disponíveis:
-
-**Criar novo site:**
-```bash
-sudo ./scripts/wp-multi.sh create nome-do-site
-```
-
-**Listar sites:**
-```bash
-sudo ./scripts/wp-multi.sh list
-```
-
-**Fazer backup:**
-```bash
-sudo ./scripts/wp-multi.sh backup nome-do-site
-```
-
-**Deletar site:**
-```bash
-sudo ./scripts/wp-multi.sh delete nome-do-site
-```
-
-**Habilitar/Desabilitar site:**
-```bash
-sudo ./scripts/wp-multi.sh enable nome-do-site
-sudo ./scripts/wp-multi.sh disable nome-do-site
-```
-
-**Ver logs:**
-```bash
-sudo ./scripts/wp-multi.sh logs nome-do-site
-```
-
-**Ajuda:**
-```bash
-./scripts/wp-multi.sh help
-```
-
-### Script de Verificação de Status (`check-status.sh`)
-
-Este script verifica o status completo do ambiente WordPress local.
-
-**Execução:**
-```bash
-./scripts/check-status.sh
-```
-
-**O que verifica:**
-- ✅ Status dos serviços (Nginx, MySQL, PHP-FPM)
-- ✅ Portas abertas (80, 3306)
-- ✅ Versões dos softwares instalados
-- ✅ Sites WordPress ativos
-- ✅ Recursos do sistema (CPU, RAM, Disco)
-- ✅ Conectividade com internet
-- ✅ Logs recentes de erros
-
-
-
-### Dashboard Web
-
-Este projeto inclui um dashboard web moderno para gerenciar sites WordPress locais.
-
-**Configuração Automática:**
-O dashboard é configurado automaticamente durante a instalação do ambiente WordPress.
-
-**Acesso:**
-- **URL:** http://localhost
-- **Funcionalidades:**
-  - Monitoramento de recursos do sistema
-  - Criação e gerenciamento de sites
-  - Visualização de logs
-  - Interface moderna e responsiva
-
-## 🔧 Configurações Padrão
-
-### Credenciais MySQL Root
-- **Usuário:** root
-- **Senha:** root123
-
-### Estrutura de Diretórios
-- **Web Root (setup-wordpress-dev.sh):** `/var/www/html`
-- **Sites (wp-multi.sh):** `/opt/webhost/sites/wordpress/`
-- **Informações dos sites:** `/opt/webhost/site-info/`
-- **Logs Nginx:** `/var/log/nginx/`
-- **Backups:** `/root/backups/`
-
-### Configurações Nginx
-- **Porta:** 80
-- **PHP-FPM:** Unix socket
-- **Gzip:** Habilitado
-- **Cache:** Configurado para arquivos estáticos
-- **Segurança:** Headers de segurança configurados
-
-## 📁 Estrutura de Arquivos
+## 📁 Estrutura de Diretórios
 
 ```
 /opt/webhost/
-├── scripts/
-│   ├── setup-wordpress-dev.sh    # Script principal de instalação
-│   ├── wp-multi.sh              # Script de gerenciamento de múltiplos sites
-│   ├── check-status.sh          # Script de verificação de status
-│   └── cleanup-wordpress.sh     # Script de limpeza completa
-├── dashboard/                    # Dashboard web para gerenciamento
-│   ├── index.php                # Interface principal
-│   ├── api/                     # APIs do dashboard
-│   ├── assets/                  # CSS, JS e recursos
-│   └── nginx-config            # Configuração Nginx
-├── sites/                       # Diretório de sites
-│   └── wordpress/              # Sites criados pelo wp-multi.sh
-├── site-info/                   # Informações dos sites
-└── README.md                    # Este arquivo
+├── dashboard/                 # Interface web do dashboard
+│   ├── api/                  # APIs para gerenciamento
+│   ├── assets/               # CSS, JS e imagens
+│   └── index.php             # Página principal
+├── sites/
+│   ├── wordpress/            # Sites WordPress
+│   ├── php/                  # Sites PHP
+│   └── html/                 # Sites HTML
+├── site-info/                # Informações dos sites
+├── scripts/                  # Scripts de gerenciamento
+│   ├── wp-multi.sh          # Gerenciamento WordPress
+│   ├── php-multi.sh         # Gerenciamento PHP
+│   └── html-multi.sh        # Gerenciamento HTML
+└── logs/                     # Logs do sistema
 ```
-
-## 🔍 Troubleshooting
-
-### Problemas Comuns
-
-**1. Erro de permissão:**
-```bash
-sudo chown -R www-data:www-data /var/www/html/nome-do-site
-sudo chmod -R 755 /var/www/html/nome-do-site
-```
-
-**2. Problemas de permissão no /opt/webhost:**
-```bash
-# Verificar permissões atuais
-ls -la /opt/webhost
-
-# Corrigir permissões manualmente
-sudo chown -R :sudo /opt/webhost
-sudo chmod -R 775 /opt/webhost
-sudo chmod g+s /opt/webhost
-
-# Adicionar usuário ao grupo sudo
-sudo usermod -a -G sudo $USER
-sudo usermod -a -G www-data $USER
-
-# Verificar grupos do usuário
-groups $USER
-```
-
-**2. Nginx não inicia:**
-```bash
-sudo nginx -t
-sudo systemctl status nginx
-```
-
-**3. MySQL não conecta:**
-```bash
-sudo systemctl status mysql
-sudo mysql -u root -p
-```
-
-**4. PHP-FPM não funciona:**
-```bash
-sudo systemctl status php8.1-fpm
-sudo nginx -t
-```
-
-### Logs Importantes
-
-- **Nginx Access:** `/var/log/nginx/nome-do-site-access.log`
-- **Nginx Error:** `/var/log/nginx/nome-do-site-error.log`
-- **PHP-FPM:** `/var/log/php8.1-fpm.log`
-- **MySQL:** `/var/log/mysql/error.log`
-
-## 🛠️ Comandos Úteis
-
-### Gerenciamento de Serviços
-```bash
-# Reiniciar serviços
-sudo systemctl restart nginx
-sudo systemctl restart mysql
-sudo systemctl restart php8.1-fpm
-
-# Verificar status
-sudo systemctl status nginx mysql php8.1-fpm
-
-# Habilitar no boot
-sudo systemctl enable nginx mysql php8.1-fpm
-```
-
-### Gerenciamento de Sites
-```bash
-# Listar todos os sites
-sudo ./scripts/wp-multi.sh list
-
-# Criar site de teste
-sudo ./scripts/wp-multi.sh create teste
-
-# Fazer backup
-sudo ./scripts/wp-multi.sh backup teste
-
-# Ver logs
-sudo ./scripts/wp-multi.sh logs teste
-
-# Verificar status do ambiente
-./scripts/check-status.sh
-
-# Ver informações do site
-cat /opt/webhost/site-info/teste-info.txt
-```
-
-### Banco de Dados
-```bash
-# Acessar MySQL
-sudo mysql -u root -p
-
-# Listar bancos
-SHOW DATABASES;
-
-# Acessar banco específico
-USE nome-do-site_db;
-SHOW TABLES;
-```
-
-## 🔒 Segurança
-
-### Recomendações
-1. **Alterar senhas padrão** após a instalação
-2. **Configurar firewall** adequadamente
-3. **Manter sistema atualizado**
-4. **Fazer backups regulares**
-5. **Usar HTTPS** em produção
-
-### Configurações de Segurança Incluídas
-- Headers de segurança no Nginx
-- Acesso negado a arquivos ocultos
-- Proteção do wp-config.php
-- Configuração de permissões adequadas
-- Chaves de segurança únicas geradas automaticamente
-- URLs locais sem necessidade de configuração de DNS
 
 ## 🎛️ Dashboard
 
-O dashboard está disponível em `http://localhost` e oferece uma interface web para gerenciar seus sites WordPress.
+### Acesso
+- **URL**: `http://localhost`
+- **Porta padrão**: 80
 
-### Funcionalidades do Dashboard
-- **Criar sites WordPress** com domínio personalizado
-- **Deletar sites** com confirmação automática
-- **Visualizar informações** dos sites criados
-- **Interface intuitiva** para gerenciamento
+### Funcionalidades
+- **Visão geral do sistema**: Status, recursos, logs
+- **Gerenciamento de sites**: Criar, deletar, visualizar
+- **Monitoramento**: Status em tempo real
+- **Logs**: Visualização de logs do sistema
+- **Backup**: Backup automático de sites
 
-### Permissões do Dashboard
+### Permissões
+O dashboard executa com permissões `www-data` e tem acesso sudo para:
+- Executar scripts de criação/deleção
+- Gerenciar arquivos dos sites
+- Configurar Nginx
+- Operações de banco de dados
 
-O usuário `www-data` tem permissões especiais configuradas em `/etc/sudoers.d/www-data`:
+## 🌐 Tipos de Sites
 
-```
-www-data ALL=(ALL) NOPASSWD: SETENV: /opt/webhost/scripts/wp-multi.sh
-```
+### 1. Sites WordPress
+- **Tecnologia**: WordPress completo
+- **Cor**: Verde (`btn-success`)
+- **Portas**: 9001-10000
+- **Estrutura**: WordPress completo com banco de dados
+- **Admin**: `/wp-admin` com credenciais automáticas
 
-Isso permite que o dashboard execute comandos administrativos sem solicitar senha, incluindo a definição da variável de ambiente `AUTO_CONFIRM` para confirmação automática de operações.
+**Criação via Dashboard:**
+- Nome do site
+- Domínio (opcional, padrão: localhost)
+- Instalação automática do WordPress
+- Criação de banco de dados
+- Configuração de admin
+
+### 2. Sites PHP
+- **Tecnologia**: PHP puro
+- **Cor**: Azul (`btn-primary`)
+- **Portas**: 9001-10000
+- **Estrutura**: Apenas `index.php` na raiz
+- **Performance**: Alta velocidade
+
+**Criação via Dashboard:**
+- Nome do site
+- Domínio (opcional, padrão: localhost)
+- Template PHP básico
+- Configuração Nginx otimizada
+
+### 3. Sites HTML
+- **Tecnologia**: HTML5 estático
+- **Cor**: Laranja (`btn-warning`)
+- **Portas**: 9001-10000
+- **Estrutura**: Apenas `index.html` na raiz
+- **Performance**: Máxima velocidade
+
+**Criação via Dashboard:**
+- Nome do site
+- Domínio (opcional, padrão: localhost)
+- Template HTML5 básico
+- Configuração Nginx para arquivos estáticos
 
 ## ⚙️ Automação WordPress
 
-### Como Funciona a Automação
+### Abordagem Nativa
+O sistema usa **automação nativa PHP** em vez de WP-CLI:
 
-O projeto utiliza **automação WordPress nativa** implementada diretamente no script `wp-multi.sh`, **sem dependência do WP-CLI externo**:
+**Vantagens:**
+- ✅ Sem dependências externas
+- ✅ Instalação mais rápida
+- ✅ Menos pontos de falha
+- ✅ Controle total do processo
 
-#### 🔧 **Processo de Instalação Automática**
+**Como funciona:**
+1. Criação de banco de dados MySQL
+2. Download do WordPress
+3. Configuração via funções PHP nativas
+4. Instalação automática
+5. Configuração de admin
 
-1. **Download e Configuração**:
-   - Baixa WordPress em português brasileiro automaticamente
-   - Configura `wp-config.php` com credenciais do banco
-   - Define configurações personalizadas (timezone, idioma, etc.)
-
-2. **Instalação via PHP Nativo**:
-   ```php
-   // Carrega WordPress diretamente
-   require_once('wp-load.php');
-   require_once('wp-admin/includes/upgrade.php');
-   
-   // Usa função nativa do WordPress
-   $result = wp_install($site_name, $admin_user, $admin_email, ...);
-   ```
-
-3. **Personalização Automática**:
-   - ✅ Remove posts padrão ("Hello World", "Olá, mundo!")
-   - ✅ Remove páginas de exemplo
-   - ✅ Oculta painel de boas-vindas
-   - ✅ Configura timezone brasileiro (`America/Sao_Paulo`)
-   - ✅ Define formato de data brasileiro (`d/m/Y`)
-   - ✅ Configura permalinks amigáveis (`/%postname%/`)
-   - ✅ Cria página inicial personalizada
-   - ✅ Define idioma português (`pt_BR`)
-
-#### 🎯 **Vantagens da Automação Nativa**
-
-- **✅ Sem dependências externas** - Não precisa instalar WP-CLI
-- **✅ Mais rápido** - Execução direta via PHP
-- **✅ Mais confiável** - Usa funções nativas do WordPress
-- **✅ Totalmente personalizada** - Configurações específicas do projeto
-- **✅ Controle total** - Pode adicionar qualquer customização
-
-#### 📋 **Diferença do WP-CLI**
+### Comparação com WP-CLI
 
 | Aspecto | Automação Nativa | WP-CLI |
 |---------|------------------|--------|
-| **Dependência** | Nenhuma | Requer instalação |
-| **Velocidade** | Mais rápido | Mais lento |
-| **Personalização** | Total | Limitada |
-| **Manutenção** | Menor | Maior |
-| **Uso** | Automático | Manual |
+| Dependências | Nenhuma | WP-CLI instalado |
+| Velocidade | Mais rápida | Mais lenta |
+| Confiabilidade | Alta | Média |
+| Controle | Total | Limitado |
 
-**Nota**: O WP-CLI seria útil apenas para gerenciamento manual via linha de comando, mas para automação de criação de sites, a implementação nativa é superior.
+## 🔐 Configuração de Permissões
+
+### Estrutura de Permissões
+```bash
+# Diretório principal
+chown -R :sudo /opt/webhost
+chmod -R 775 /opt/webhost
+chmod g+s /opt/webhost
+
+# Usuário do sistema
+usermod -a -G sudo,www-data $CURRENT_USER
+```
+
+### Sudoers Configuration
+```bash
+# /etc/sudoers.d/www-data
+www-data ALL=(ALL) NOPASSWD: SETENV: /opt/webhost/scripts/wp-multi.sh
+www-data ALL=(ALL) NOPASSWD: SETENV: /opt/webhost/scripts/php-multi.sh
+www-data ALL=(ALL) NOPASSWD: SETENV: /opt/webhost/scripts/html-multi.sh
+www-data ALL=(ALL) NOPASSWD: mysql, mysqldump, nginx, systemctl reload nginx, systemctl restart nginx
+```
+
+### Benefícios
+- ✅ Acesso compartilhado entre usuários
+- ✅ Herança automática de grupo
+- ✅ Execução segura via dashboard
+- ✅ Sem prompts de senha
 
 ## 🔧 Troubleshooting
 
 ### Problemas Comuns
 
-#### **Dashboard não carrega em localhost**
+#### Dashboard não carrega
 ```bash
-# Verificar se o Nginx está rodando
+# Verificar Nginx
 sudo systemctl status nginx
-
-# Verificar configuração do dashboard
 sudo nginx -t
 
-# Recarregar Nginx
-sudo systemctl reload nginx
+# Verificar permissões
+ls -la /opt/webhost/dashboard/
 ```
 
-#### **Erro ao criar/deletar sites via dashboard**
+#### Erro ao criar/deletar sites
 ```bash
-# Verificar permissões do sudoers
+# Verificar sudoers
 sudo cat /etc/sudoers.d/www-data
 
-# Verificar se www-data está no grupo correto
-groups www-data
-
-# Verificar logs do Nginx
-sudo tail -f /var/log/nginx/error.log
+# Verificar permissões
+ls -la /opt/webhost/scripts/
 ```
 
-#### **Sites com portas duplicadas**
+#### Portas duplicadas
 ```bash
 # Verificar portas em uso
 ss -tuln | grep :900
 
-# Verificar configurações do Nginx
+# Verificar configurações Nginx
 ls -la /etc/nginx/sites-enabled/
 ```
 
-#### **Permissões insuficientes**
+#### Problemas de permissão
 ```bash
-# Verificar permissões do diretório
-ls -la /opt/webhost/
-
-# Corrigir permissões se necessário
+# Recriar permissões
 sudo chown -R :sudo /opt/webhost
 sudo chmod -R 775 /opt/webhost
 sudo chmod g+s /opt/webhost
 ```
 
 ### Logs Importantes
+```bash
+# Nginx
+sudo tail -f /var/log/nginx/error.log
+sudo tail -f /var/log/nginx/access.log
 
-- **Nginx**: `/var/log/nginx/error.log`
-- **PHP-FPM**: `/var/log/php8.1-fpm.log`
-- **MySQL**: `/var/log/mysql/error.log`
-- **Scripts**: Saída colorida no terminal
-
-## 📞 Suporte
-
-Para problemas ou dúvidas:
-1. Verifique os logs de erro
-2. Execute `./scripts/wp-multi.sh help` para ver comandos disponíveis
-3. Consulte a seção de troubleshooting acima
+# Sistema
+sudo journalctl -u nginx -f
+sudo journalctl -u mysql -f
+```
 
 ## 📝 Changelog
 
-### v1.2.0
-- ✅ Dashboard web funcional em http://localhost
-- ✅ Correção de permissões para deleção de sites via dashboard
-- ✅ Configuração automática de sudoers para www-data
-- ✅ Suporte a variáveis de ambiente no sudo (SETENV)
-- ✅ Confirmação automática para operações via dashboard
-- ✅ Script de instalação atualizado com todas as configurações necessárias
-- ✅ Automação WordPress nativa (sem dependência do WP-CLI)
-- ✅ Criação automática de diretórios do sistema
-- ✅ Cópia automática de scripts necessários
+### v1.3.0 - Sistema Multi-Tecnologia
+- ✨ Adicionado suporte a sites PHP
+- ✨ Adicionado suporte a sites HTML
+- 🎨 Dashboard redesenhado com seções separadas
+- 🎨 Cores padronizadas por tecnologia
+- 🔧 APIs específicas para cada tipo de site
+- 📱 Interface responsiva melhorada
 
-### v1.1.0
-- ✅ URLs simplificadas usando localhost com portas automáticas
-- ✅ Chaves de segurança únicas geradas automaticamente
-- ✅ Arquivos de informações organizados em diretório específico
-- ✅ Correção automática de permissões de diretórios
-- ✅ Melhor tratamento de erros e logs
+### v1.2.0 - Dashboard e Permissões
+- ✨ Dashboard web completo
+- 🔐 Sistema de permissões otimizado
+- ⚙️ Configuração sudoers automática
+- 🎛️ Gerenciamento visual de sites
+- 🔧 APIs REST para automação
+- 📊 Monitoramento em tempo real
 
-### v1.0.0
-- ✅ Instalação automatizada do ambiente WordPress
-- ✅ Gerenciamento de múltiplos sites
-- ✅ Sistema de backup
-- ✅ Configurações de segurança
-- ✅ Logs coloridos e informativos
+### v1.1.0 - Refatoração e Melhorias
+- 🔄 Refatoração para `/opt/webhost`
+- 🔧 Correção de permissões
+- ⚡ Otimização de performance
+- 🐛 Correção de bugs diversos
+- 📚 Documentação atualizada
+
+### v1.0.0 - Versão Inicial
+- ✨ Instalação automática do WordPress
+- 🌐 Configuração Nginx automática
+- 🗄️ Configuração MySQL automática
+- 🔧 Scripts de gerenciamento
+- 📁 Estrutura de diretórios organizada
+
+## 🤝 Contribuição
+
+Para contribuir com o projeto:
+
+1. Fork o repositório
+2. Crie uma branch para sua feature
+3. Commit suas mudanças
+4. Push para a branch
+5. Abra um Pull Request
 
 ## 📄 Licença
 
-Este projeto é de uso livre para fins educacionais e de desenvolvimento.
+Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalhes.
+
+## 👨‍💻 Autor
+
+**Thiago Macêdo**
+- Desenvolvedor Full Stack
+- Especialista em WordPress e PHP
+- Criador do ambiente de desenvolvimento
 
 ---
 
-**Desenvolvido para facilitar o desenvolvimento local com WordPress, Nginx e MySQL.** 
+**⭐ Se este projeto te ajudou, considere dar uma estrela!** 
