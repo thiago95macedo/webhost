@@ -515,7 +515,7 @@ body {
 }
 
 .modal-content {
-    background: var(--white);
+    background: #ffffff;
     border-radius: 12px;
     max-width: 600px;
     width: 90%;
@@ -524,6 +524,7 @@ body {
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
     animation: slideIn 0.3s ease;
     border: 2px solid var(--border-medium);
+    opacity: 1;
 }
 
 .modal-header {
