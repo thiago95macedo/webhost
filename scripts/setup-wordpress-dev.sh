@@ -297,6 +297,7 @@ ufw --force enable
 log "Configurando permissões sudo para www-data..."
 cat > /etc/sudoers.d/www-data << 'EOF'
 www-data ALL=(ALL) NOPASSWD: SETENV: /opt/webhost/scripts/wp-multi.sh
+www-data ALL=(ALL) NOPASSWD: SETENV: /opt/webhost/scripts/php-multi.sh
 www-data ALL=(ALL) NOPASSWD: /opt/webhost/scripts/check-status.sh
 www-data ALL=(ALL) NOPASSWD: /opt/webhost/scripts/cleanup-wordpress.sh
 www-data ALL=(ALL) NOPASSWD: /usr/bin/mysql

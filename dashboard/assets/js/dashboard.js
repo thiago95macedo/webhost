@@ -6,7 +6,8 @@ class WordPressDashboard {
 
     init() {
         this.loadSystemInfo();
-        this.loadSites();
+        this.loadWordPressSites();
+        this.loadPhpSites();
         this.setupEventListeners();
     }
 
@@ -14,7 +15,8 @@ class WordPressDashboard {
         // Auto-refresh every 30 seconds
         setInterval(() => {
             this.loadSystemInfo();
-            this.loadSites();
+            this.loadWordPressSites();
+            this.loadPhpSites();
         }, 30000);
     }
 
@@ -59,34 +61,71 @@ class WordPressDashboard {
         }
     }
 
-    async loadSites() {
+    async loadWordPressSites() {
         try {
             const response = await fetch('api/sites.php');
             const data = await response.json();
             
             if (data.success) {
-                this.updateSitesContainer(data.sites);
+                this.updateWordPressSitesContainer(data.sites);
             } else {
-                this.showError('Erro ao carregar sites: ' + data.message);
+                this.showError('Erro ao carregar sites WordPress: ' + data.message);
             }
         } catch (error) {
-            console.error('Erro ao carregar sites:', error);
-            this.showError('Erro de conexão ao carregar sites');
+            console.error('Erro ao carregar sites WordPress:', error);
+            this.showError('Erro de conexão ao carregar sites WordPress');
         }
     }
 
-    updateSitesContainer(sites) {
-        const container = document.getElementById('sites-container');
+    async loadPhpSites() {
+        try {
+            const response = await fetch('api/php-sites.php');
+            const data = await response.json();
+            
+            if (data.success) {
+                this.updatePhpSitesContainer(data.sites);
+            } else {
+                this.showError('Erro ao carregar sites PHP: ' + data.message);
+            }
+        } catch (error) {
+            console.error('Erro ao carregar sites PHP:', error);
+            this.showError('Erro de conexão ao carregar sites PHP');
+        }
+    }
+
+    updateWordPressSitesContainer(sites) {
+        const container = document.getElementById('wordpress-sites-container');
         
         if (!sites || sites.length === 0) {
             container.innerHTML = `
                 <div class="text-center" style="grid-column: 1 / -1; padding: 3rem;">
-                    <i class="fas fa-folder-open" style="font-size: 3rem; color: var(--medium-gray); margin-bottom: 1rem;"></i>
-                    <h3>Nenhum site encontrado</h3>
+                    <i class="fab fa-wordpress" style="font-size: 3rem; color: var(--medium-gray); margin-bottom: 1rem;"></i>
+                    <h3>Nenhum site WordPress encontrado</h3>
                     <p class="text-muted">Crie seu primeiro site WordPress para começar</p>
-                    <button class="btn btn-primary" onclick="createNewSite()">
+                    <button class="btn btn-success" onclick="createNewWordPressSite()">
                         <i class="fas fa-plus"></i>
-                        Criar Primeiro Site
+                        Criar Primeiro Site WordPress
+                    </button>
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = sites.map(site => this.createSiteCard(site)).join('');
+    }
+
+    updatePhpSitesContainer(sites) {
+        const container = document.getElementById('php-sites-container');
+        
+        if (!sites || sites.length === 0) {
+            container.innerHTML = `
+                <div class="text-center" style="grid-column: 1 / -1; padding: 3rem;">
+                    <i class="fab fa-php" style="font-size: 3rem; color: var(--medium-gray); margin-bottom: 1rem;"></i>
+                    <h3>Nenhum site PHP encontrado</h3>
+                    <p class="text-muted">Crie seu primeiro site PHP para começar</p>
+                    <button class="btn btn-primary" onclick="createNewPhpSite()">
+                        <i class="fas fa-plus"></i>
+                        Criar Primeiro Site PHP
                     </button>
                 </div>
             `;
@@ -178,7 +217,8 @@ class WordPressDashboard {
 // Global Functions
 function refreshData() {
     dashboard.loadSystemInfo();
-    dashboard.loadSites();
+    dashboard.loadWordPressSites();
+    dashboard.loadPhpSites();
     
     // Show refresh feedback
     const btn = event.target.closest('.btn');
@@ -192,9 +232,9 @@ function refreshData() {
     }, 2000);
 }
 
-function createNewSite() {
-    dashboard.showModal('Criar Novo Site', `
-        <form id="create-site-form">
+function createNewWordPressSite() {
+    dashboard.showModal('Criar Novo Site WordPress', `
+        <form id="create-wordpress-site-form">
             <div class="mb-2">
                 <label for="site-name">Nome do Site:</label>
                 <input type="text" id="site-name" name="site-name" required 
@@ -207,17 +247,42 @@ function createNewSite() {
             </div>
             <div class="text-center">
                 <button type="submit" class="btn btn-success">
-                    <i class="fas fa-plus"></i>
-                    Criar Site
+                    <i class="fab fa-wordpress"></i>
+                    Criar Site WordPress
                 </button>
             </div>
         </form>
     `);
     
-    document.getElementById('create-site-form').addEventListener('submit', handleCreateSite);
+    document.getElementById('create-wordpress-site-form').addEventListener('submit', handleCreateWordPressSite);
 }
 
-async function handleCreateSite(event) {
+function createNewPhpSite() {
+    dashboard.showModal('Criar Novo Site PHP', `
+        <form id="create-php-site-form">
+            <div class="mb-2">
+                <label for="site-name">Nome do Projeto:</label>
+                <input type="text" id="site-name" name="site-name" required 
+                       placeholder="ex: meu-projeto" class="form-control">
+            </div>
+            <div class="mb-3">
+                <label for="site-domain">Domínio (opcional):</label>
+                <input type="text" id="site-domain" name="site-domain" 
+                       placeholder="localhost" class="form-control">
+            </div>
+            <div class="text-center">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fab fa-php"></i>
+                    Criar Site PHP
+                </button>
+            </div>
+        </form>
+    `);
+    
+    document.getElementById('create-php-site-form').addEventListener('submit', handleCreatePhpSite);
+}
+
+async function handleCreateWordPressSite(event) {
     event.preventDefault();
     
     const formData = new FormData(event.target);
@@ -230,7 +295,7 @@ async function handleCreateSite(event) {
     
     submitButton.innerHTML = `
         <i class="fas fa-spinner fa-spin"></i>
-        Criando Site...
+        Criando Site WordPress...
     `;
     submitButton.disabled = true;
     
@@ -250,19 +315,71 @@ async function handleCreateSite(event) {
             dashboard.showModal('Sucesso', `
                 <div class="text-center">
                     <i class="fas fa-check-circle" style="font-size: 3rem; color: var(--success); margin-bottom: 1rem;"></i>
-                    <h3>Site criado com sucesso!</h3>
+                    <h3>Site WordPress criado com sucesso!</h3>
                     <p><strong>URL:</strong> ${data.site.url}</p>
                     <p><strong>Admin:</strong> ${data.site.url}/wp-admin</p>
                     <p><strong>Usuário:</strong> ${data.site.admin_user}</p>
                     <p><strong>Senha:</strong> ${data.site.admin_password}</p>
                 </div>
             `);
-            dashboard.loadSites();
+            dashboard.loadWordPressSites();
         } else {
             dashboard.showError(data.message);
         }
     } catch (error) {
-        dashboard.showError('Erro ao criar site: ' + error.message);
+        dashboard.showError('Erro ao criar site WordPress: ' + error.message);
+    } finally {
+        // Restaurar botão original
+        submitButton.innerHTML = originalButtonContent;
+        submitButton.disabled = false;
+    }
+}
+
+async function handleCreatePhpSite(event) {
+    event.preventDefault();
+    
+    const formData = new FormData(event.target);
+    const siteName = formData.get('site-name');
+    const domain = formData.get('site-domain') || 'localhost';
+    
+    // Mostrar animação de loading
+    const submitButton = event.target.querySelector('button[type="submit"]');
+    const originalButtonContent = submitButton.innerHTML;
+    
+    submitButton.innerHTML = `
+        <i class="fas fa-spinner fa-spin"></i>
+        Criando Site PHP...
+    `;
+    submitButton.disabled = true;
+    
+    try {
+        const response = await fetch('api/create-php-site.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ name: siteName, domain: domain })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            closeModal();
+            dashboard.showModal('Sucesso', `
+                <div class="text-center">
+                    <i class="fas fa-check-circle" style="font-size: 3rem; color: var(--success); margin-bottom: 1rem;"></i>
+                    <h3>Site PHP criado com sucesso!</h3>
+                    <p><strong>URL:</strong> ${data.site.url}</p>
+                    <p><strong>Document Root:</strong> ${data.site.directory}/public</p>
+                    <p><strong>Porta:</strong> ${data.site.port}</p>
+                </div>
+            `);
+            dashboard.loadPhpSites();
+        } else {
+            dashboard.showError(data.message);
+        }
+    } catch (error) {
+        dashboard.showError('Erro ao criar site PHP: ' + error.message);
     } finally {
         // Restaurar botão original
         submitButton.innerHTML = originalButtonContent;
@@ -341,7 +458,7 @@ function deleteSite(siteName) {
                         <p>O site "${siteName}" foi removido do sistema.</p>
                     </div>
                 `);
-                dashboard.loadSites();
+                dashboard.loadWordPressSites();
             } else {
                 dashboard.showError(data.message);
             }

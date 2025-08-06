@@ -132,18 +132,38 @@
             <section class="dashboard-section">
                 <div class="section-header">
                     <h2 class="section-title">
-                        <i class="fas fa-globe"></i>
+                        <i class="fab fa-wordpress"></i>
                         Sites WordPress
                     </h2>
-                    <button class="btn btn-success" onclick="createNewSite()">
+                    <button class="btn btn-success" onclick="createNewWordPressSite()">
                         <i class="fas fa-plus"></i>
-                        Novo Site
+                        Novo Site WordPress
                     </button>
                 </div>
-                <div class="sites-container" id="sites-container">
+                <div class="sites-container" id="wordpress-sites-container">
                     <div class="loading-spinner">
                         <i class="fas fa-spinner fa-spin"></i>
-                        <p>Carregando sites...</p>
+                        <p>Carregando sites WordPress...</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PHP Sites -->
+            <section class="dashboard-section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fab fa-php"></i>
+                        Sites PHP
+                    </h2>
+                    <button class="btn btn-primary" onclick="createNewPhpSite()">
+                        <i class="fas fa-plus"></i>
+                        Novo Site PHP
+                    </button>
+                </div>
+                <div class="sites-container" id="php-sites-container">
+                    <div class="loading-spinner">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <p>Carregando sites PHP...</p>
                     </div>
                 </div>
             </section>
