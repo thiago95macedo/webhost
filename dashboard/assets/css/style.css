@@ -239,6 +239,13 @@ body {
     font-size: 0.85rem;
 }
 
+/* Botões de criação de sites - tamanho padronizado */
+.section-header .btn {
+    min-width: 200px;
+    justify-content: center;
+    white-space: nowrap;
+}
+
 .btn:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
