@@ -1,20 +1,49 @@
-/* CSS Variables - Paleta de Cores */
+/* CSS Variables - Paleta de Cores Profissional */
 :root {
-    --primary-blue: #0056b3;
-    --light-blue: #4d89ca;
-    --medium-blue: #266fbe;
-    --dark-blue: #003c7d;
-    --complementary: #ffa94c;
-    --success: #28A745;
-    --danger: #DC3545;
-    --warning: #FFA500;
-    --light-gray: #F8F9FA;
-    --medium-gray: #E9ECEF;
-    --dark-gray: #343A40;
-    --black: #212529;
-    --yellow: #FFC107;
-    --purple: #6F42C1;
-    --desaturated: #406b9a;
+    /* Cores Primárias */
+    --primary-blue: #0056b3;        /* Ações primárias, botões principais */
+    --light-blue: #5a9ee7;          /* Estados hover, destaques suaves */
+    --dark-blue: #001124;           /* Estados ativos/pressed, headers */
+    
+    /* Cores de Status */
+    --success: #16a34a;             /* Confirmações, status de sucesso */
+    --danger: #dc2626;              /* Erros críticos, alertas de falha */
+    --warning: #eab308;             /* Avisos importantes, alertas não-críticos */
+    --info: #3b82f6;                /* Informações contextuais, tooltips */
+    --secondary: #0093a4;           /* Elementos secundários, ícones */
+    
+    /* Cores de Diferenciação */
+    --accent-purple: #000aa4;       /* Diferenciação sutil, bordas especiais */
+    --accent-pink: #92084a;         /* Acentos visuais, elementos distintivos */
+    --accent-green: #4a9208;        /* Variações temáticas, categorização */
+    --accent-orange: #80470a;       /* Contraste máximo, elementos opostos */
+    
+    /* Cores Neutras */
+    --white: #ffffff;               /* Fundo principal, cards */
+    --light-gray: #f5f5f5;          /* Backgrounds alternativos */
+    --border-light: #ededed;        /* Bordas suaves, divisores sutis */
+    --border-medium: #dee0e3;       /* Divisores padrão, bordas de campos */
+    --border-dark: #b7bcc2;         /* Bordas destacadas, elementos desabilitados */
+    
+    /* Cores de Texto */
+    --text-muted: #969ea6;          /* Textos secundários, legendas */
+    --text-secondary: #6c757f;      /* Ícones padrão, textos terciários */
+    --text-support: #596169;        /* Textos de apoio, labels */
+    --text-primary: #3d4248;        /* Textos principais, conteúdo primário */
+    --text-dark: #1e2124;           /* Títulos, cabeçalhos, textos importantes */
+    --text-black: #000000;          /* Textos de máximo contraste */
+    
+    /* Variáveis de Uso */
+    --primary: var(--primary-blue);
+    --secondary: var(--secondary);
+    --success: var(--success);
+    --danger: var(--danger);
+    --warning: var(--warning);
+    --info: var(--info);
+    --light: var(--light-gray);
+    --dark: var(--text-dark);
+    --white: var(--white);
+    --black: var(--text-black);
 }
 
 /* Reset e Base */
@@ -31,8 +60,8 @@ button {
 
 body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: linear-gradient(135deg, var(--light-gray) 0%, var(--medium-gray) 100%);
-    color: var(--dark-gray);
+    background: linear-gradient(135deg, var(--light-gray) 0%, var(--border-light) 100%);
+    color: var(--text-primary);
     line-height: 1.5;
     min-height: 100vh;
     font-size: 0.9rem;
@@ -47,10 +76,10 @@ body {
 
 /* Header */
 .dashboard-header {
-    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--medium-blue) 100%);
+    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--dark-blue) 100%);
     color: white;
     padding: 1rem 0;
-    box-shadow: 0 4px 20px rgba(0, 86, 179, 0.15);
+    box-shadow: 0 4px 20px rgba(0, 17, 36, 0.2);
     position: sticky;
     top: 0;
     z-index: 100;
@@ -128,7 +157,7 @@ body {
     gap: 0.75rem;
     font-size: 1.2rem;
     font-weight: 600;
-    color: var(--dark-gray);
+    color: var(--text-dark);
     margin-bottom: 1rem;
 }
 
@@ -149,8 +178,8 @@ body {
 /* Cards */
 /* Cards Padronizados */
 .info-card {
-    background: white;
-    border: 1px solid var(--border-color);
+    background: var(--white);
+    border: 1px solid var(--border-medium);
     border-radius: 6px;
     padding: 0.6rem;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -182,7 +211,7 @@ body {
 .card-content h3 {
     font-size: 0.75rem;
     font-weight: 500;
-    color: var(--dark-gray);
+    color: var(--text-primary);
     margin-bottom: 0.2rem;
     text-transform: uppercase;
     letter-spacing: 0.2px;
@@ -216,7 +245,7 @@ body {
 }
 
 .btn-primary {
-    background: linear-gradient(135deg, var(--primary-blue), var(--medium-blue));
+    background: linear-gradient(135deg, var(--primary-blue), var(--light-blue));
     color: white;
 }
 
@@ -231,12 +260,12 @@ body {
 }
 
 .btn-danger {
-    background: linear-gradient(135deg, var(--danger), #e74c3c);
+    background: linear-gradient(135deg, var(--danger), #b91c1c);
     color: white;
 }
 
 .btn-warning {
-    background: linear-gradient(135deg, var(--warning), #fd7e14);
+    background: linear-gradient(135deg, var(--warning), #ca8a04);
     color: white;
 }
 
@@ -266,12 +295,12 @@ body {
 }
 
 .site-card {
-    background: white;
+    background: var(--white);
     border-radius: 6px;
     padding: 0.75rem;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
     transition: all 0.3s ease;
-    border: 1px solid var(--medium-gray);
+    border: 1px solid var(--border-medium);
     position: relative;
     overflow: hidden;
 }
@@ -283,7 +312,7 @@ body {
     left: 0;
     right: 0;
     height: 4px;
-    background: linear-gradient(90deg, var(--primary-blue), var(--complementary));
+    background: linear-gradient(90deg, var(--primary-blue), var(--accent-purple));
 }
 
 .site-card:hover {
@@ -301,7 +330,7 @@ body {
 .site-name {
     font-size: 0.9rem;
     font-weight: 600;
-    color: var(--dark-gray);
+    color: var(--text-primary);
 }
 
 .site-status {
@@ -335,7 +364,7 @@ body {
 }
 
 .site-info-label {
-    color: var(--dark-gray);
+    color: var(--text-primary);
     font-weight: 500;
 }
 
@@ -378,6 +407,68 @@ body {
     color: var(--primary-blue);
 }
 
+/* Melhorias com a nova paleta de cores */
+.btn-info {
+    background: linear-gradient(135deg, var(--info), #2563eb);
+    color: white;
+}
+
+.btn-secondary {
+    background: linear-gradient(135deg, var(--secondary), #0891b2);
+    color: white;
+}
+
+/* Estados hover melhorados */
+.btn-primary:hover {
+    background: linear-gradient(135deg, var(--light-blue), var(--primary-blue));
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 86, 179, 0.3);
+}
+
+.btn-success:hover {
+    background: linear-gradient(135deg, #22c55e, var(--success));
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(22, 163, 74, 0.3);
+}
+
+.btn-danger:hover {
+    background: linear-gradient(135deg, #ef4444, var(--danger));
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(220, 38, 38, 0.3);
+}
+
+.btn-warning:hover {
+    background: linear-gradient(135deg, #f59e0b, var(--warning));
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(234, 179, 8, 0.3);
+}
+
+/* Cards com cores temáticas */
+.info-card.wordpress {
+    border-left: 4px solid var(--accent-purple);
+}
+
+.info-card.php {
+    border-left: 4px solid var(--accent-green);
+}
+
+.info-card.html {
+    border-left: 4px solid var(--accent-orange);
+}
+
+/* Status indicators melhorados */
+.status-active {
+    background: rgba(22, 163, 74, 0.1);
+    color: var(--success);
+    border: 1px solid rgba(22, 163, 74, 0.2);
+}
+
+.status-inactive {
+    background: rgba(220, 38, 38, 0.1);
+    color: var(--danger);
+    border: 1px solid rgba(220, 38, 38, 0.2);
+}
+
 .loading-spinner i {
     font-size: 2rem;
     margin-bottom: 1rem;
@@ -385,7 +476,7 @@ body {
 
 /* Footer */
 .dashboard-footer {
-    background: var(--dark-gray);
+    background: var(--text-dark);
     color: white;
     text-align: center;
     padding: 1.5rem;
@@ -413,7 +504,7 @@ body {
 }
 
 .modal-content {
-    background: white;
+    background: var(--white);
     border-radius: 12px;
     max-width: 600px;
     width: 90%;
@@ -432,7 +523,7 @@ body {
 }
 
 .modal-header h3 {
-    color: var(--dark-gray);
+    color: var(--text-dark);
     font-weight: 600;
 }
 
@@ -441,7 +532,7 @@ body {
     border: none;
     font-size: 1.5rem;
     cursor: pointer;
-    color: var(--dark-gray);
+    color: var(--text-primary);
     padding: 0.5rem;
     border-radius: 50%;
     transition: all 0.3s ease;
@@ -557,11 +648,11 @@ body {
 .form-control {
     width: 100%;
     padding: 0.75rem;
-    border: 2px solid var(--medium-gray);
+    border: 2px solid var(--border-medium);
     border-radius: 8px;
     font-size: 0.9rem;
     transition: all 0.3s ease;
-    background: white;
+    background: var(--white);
 }
 
 .form-control:focus {
@@ -571,7 +662,7 @@ body {
 }
 
 .form-control::placeholder {
-    color: var(--dark-gray);
+    color: var(--text-primary);
     opacity: 0.5;
 }
 
@@ -587,7 +678,7 @@ body {
 
 .progress-fill {
     height: 100%;
-    background: linear-gradient(90deg, var(--primary-blue), var(--complementary));
+    background: linear-gradient(90deg, var(--primary-blue), var(--accent-purple));
     width: 0%;
     transition: width 0.3s ease;
 }
@@ -620,13 +711,13 @@ body {
 }
 
 .log-section h4 {
-    color: var(--dark-gray);
+    color: var(--text-dark);
     margin-bottom: 0.5rem;
     font-size: 1rem;
 }
 
 .log-content {
-    background: var(--dark-gray);
+    background: var(--text-dark);
     color: #fff;
     padding: 1rem;
     border-radius: 8px;
@@ -645,7 +736,7 @@ body {
 }
 
 .setting-group h4 {
-    color: var(--dark-gray);
+    color: var(--text-dark);
     margin-bottom: 1rem;
     font-size: 1.1rem;
 }
@@ -658,14 +749,14 @@ body {
     display: block;
     margin-bottom: 0.5rem;
     font-weight: 500;
-    color: var(--dark-gray);
+    color: var(--text-primary);
 }
 
 .setting-item input[type="number"],
 .setting-item input[type="text"] {
     width: 100%;
     padding: 0.5rem;
-    border: 1px solid var(--medium-gray);
+    border: 1px solid var(--border-medium);
     border-radius: 4px;
     font-size: 0.9rem;
 }
@@ -681,10 +772,10 @@ body {
 }
 
 .info-group h4 {
-    color: var(--dark-gray);
+    color: var(--text-dark);
     margin-bottom: 0.75rem;
     font-size: 1rem;
-    border-bottom: 2px solid var(--medium-gray);
+    border-bottom: 2px solid var(--border-medium);
     padding-bottom: 0.5rem;
 }
 
@@ -703,7 +794,7 @@ body {
 }
 
 .text-muted {
-    color: var(--dark-gray);
+    color: var(--text-muted);
     opacity: 0.7;
 }
 
