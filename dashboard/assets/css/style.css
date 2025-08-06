@@ -409,7 +409,7 @@ body {
 
 /* Melhorias com a nova paleta de cores */
 .btn-info {
-    background: linear-gradient(135deg, var(--info), #2563eb);
+    background: #4a9208;
     color: white;
 }
 
@@ -447,6 +447,12 @@ body {
     background: #18b955; /* Refresh Green Hover */
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(22, 163, 74, 0.3);
+}
+
+.btn-info:hover {
+    background: #5bb318; /* Site Button Hover */
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(74, 146, 8, 0.3);
 }
 
 /* Cards com cores temáticas */
