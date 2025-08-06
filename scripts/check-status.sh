@@ -1,6 +1,7 @@
 #!/bin/bash
 
-# Script para verificar status do ambiente WordPress local
+# Script para verificar status do ambiente de desenvolvimento web
+# Versão: 1.4.0 - Migração para Apache
 
 # Cores para output
 RED='\033[0;31m'
@@ -69,10 +70,10 @@ check_wordpress_sites() {
         for site_dir in "$web_root"/*; do
             if [ -d "$site_dir" ] && [ -f "$site_dir/wp-config.php" ]; then
                 local site_name=$(basename "$site_dir")
-                local port=$(grep -h "listen" "/etc/nginx/sites-available/$site_name" 2>/dev/null | awk '{print $2}' | sed 's/;$//' || echo "80")
+                local port=$(grep -h "VirtualHost \*:" "/etc/apache2/sites-available/$site_name.conf" 2>/dev/null | awk '{print $2}' | sed 's/:$//' || echo "80")
                 local status=""
                 
-                if [ -L "/etc/nginx/sites-enabled/$site_name" ]; then
+                if [ -f "/etc/apache2/sites-enabled/$site_name.conf" ]; then
                     status="${GREEN}Ativo${NC}"
                 else
                     status="${RED}Inativo${NC}"
@@ -88,10 +89,10 @@ check_wordpress_sites() {
         for site_dir in "$multi_sites_root"/*; do
             if [ -d "$site_dir" ] && [ -f "$site_dir/wp-config.php" ]; then
                 local site_name=$(basename "$site_dir")
-                local port=$(grep -h "listen" "/etc/nginx/sites-available/$site_name" 2>/dev/null | awk '{print $2}' | sed 's/;$//' || echo "80")
+                local port=$(grep -h "VirtualHost \*:" "/etc/apache2/sites-available/$site_name.conf" 2>/dev/null | awk '{print $2}' | sed 's/:$//' || echo "80")
                 local status=""
                 
-                if [ -L "/etc/nginx/sites-enabled/$site_name" ]; then
+                if [ -f "/etc/apache2/sites-enabled/$site_name.conf" ]; then
                     status="${GREEN}Ativo${NC}"
                 else
                     status="${RED}Inativo${NC}"
@@ -151,13 +152,13 @@ check_connectivity() {
 check_recent_logs() {
     echo -e "\n${BLUE}=== LOGS RECENTES ===${NC}"
     
-    # Nginx error logs
-    if [ -f "/var/log/nginx/error.log" ]; then
-        local nginx_errors=$(tail -5 /var/log/nginx/error.log | grep -v "favicon.ico" | wc -l)
-        if [ $nginx_errors -gt 0 ]; then
-            echo -e "  ${YELLOW}⚠${NC} Nginx: ${YELLOW}$nginx_errors${NC} erros recentes"
+    # Apache error logs
+    if [ -f "/var/log/apache2/error.log" ]; then
+        local apache_errors=$(tail -5 /var/log/apache2/error.log | grep -v "favicon.ico" | wc -l)
+        if [ $apache_errors -gt 0 ]; then
+            echo -e "  ${YELLOW}⚠${NC} Apache: ${YELLOW}$apache_errors${NC} erros recentes"
         else
-            echo -e "  ${GREEN}✓${NC} Nginx: ${GREEN}Sem erros recentes${NC}"
+            echo -e "  ${GREEN}✓${NC} Apache: ${GREEN}Sem erros recentes${NC}"
         fi
     fi
     
@@ -182,9 +183,8 @@ main() {
     
     # Verificar serviços
     echo -e "\n${BLUE}=== SERVIÇOS ===${NC}"
-    check_service "nginx" "Nginx"
+    check_service "apache2" "Apache"
     check_service "mysql" "MySQL"
-    check_service "php8.1-fpm" "PHP-FPM"
     
     # Verificar portas
     echo -e "\n${BLUE}=== PORTAS ===${NC}"
@@ -193,7 +193,7 @@ main() {
     
     # Verificar versões
     echo -e "\n${BLUE}=== VERSÕES ===${NC}"
-    echo -e "  Nginx: $(get_version 'nginx -v 2>&1')"
+    echo -e "  Apache: $(get_version 'apache2 -v 2>&1')"
     echo -e "  MySQL: $(get_version 'mysql --version')"
     echo -e "  PHP: $(get_version 'php -v')"
     

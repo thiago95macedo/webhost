@@ -1,6 +1,7 @@
 #!/bin/bash
 
-# Script para limpeza completa do ambiente WordPress local
+# Script para limpeza completa do ambiente de desenvolvimento web
+# Versão: 1.4.0 - Migração para Apache
 # Desenvolvido para Ubuntu/Debian
 
 set -e
@@ -31,25 +32,23 @@ if [[ $EUID -ne 0 ]]; then
    error "Este script deve ser executado como root (use sudo)"
 fi
 
-log "Iniciando limpeza completa do ambiente WordPress..."
+log "Iniciando limpeza completa do ambiente de desenvolvimento web..."
 
 # Parar serviços
 log "Parando serviços..."
-systemctl stop nginx 2>/dev/null || true
+systemctl stop apache2 2>/dev/null || true
 systemctl stop mysql 2>/dev/null || true
-systemctl stop php8.1-fpm 2>/dev/null || true
 
 # Desabilitar serviços
 log "Desabilitando serviços..."
-systemctl disable nginx 2>/dev/null || true
+systemctl disable apache2 2>/dev/null || true
 systemctl disable mysql 2>/dev/null || true
-systemctl disable php8.1-fpm 2>/dev/null || true
 
 # Remover pacotes
 log "Removendo pacotes..."
-apt remove --purge -y nginx nginx-common nginx-core 2>/dev/null || true
+apt remove --purge -y apache2 apache2-bin apache2-data apache2-utils 2>/dev/null || true
 apt remove --purge -y mysql-server mysql-client mysql-common 2>/dev/null || true
-apt remove --purge -y php8.1-fpm php8.1-mysql php8.1-curl php8.1-gd php8.1-mbstring php8.1-xml php8.1-zip php8.1-cli php8.1-common php8.1-opcache php8.1-readline php8.1-xmlrpc php8.1-soap php8.1-intl php8.1-bcmath 2>/dev/null || true
+apt remove --purge -y php8.1 php8.1-mysql php8.1-curl php8.1-gd php8.1-mbstring php8.1-xml php8.1-zip php8.1-cli php8.1-common php8.1-opcache php8.1-readline php8.1-xmlrpc php8.1-soap php8.1-intl php8.1-bcmath 2>/dev/null || true
 
 # Remover dependências não utilizadas
 log "Removendo dependências não utilizadas..."
@@ -59,26 +58,26 @@ apt autoclean
 # Remover diretórios e arquivos
 log "Removendo diretórios e arquivos..."
 
-# Remover sites WordPress
+# Remover sites
 rm -rf /var/www/html/* 2>/dev/null || true
 rm -rf /var/www/html/.* 2>/dev/null || true
 rm -rf /opt/webhost/sites/wordpress/* 2>/dev/null || true
+rm -rf /opt/webhost/sites/php/* 2>/dev/null || true
+rm -rf /opt/webhost/sites/html/* 2>/dev/null || true
 
-# Remover configurações Nginx
-rm -rf /etc/nginx/sites-available/* 2>/dev/null || true
-rm -rf /etc/nginx/sites-enabled/* 2>/dev/null || true
-rm -f /etc/nginx/sites-enabled/default 2>/dev/null || true
+# Remover configurações Apache
+rm -rf /etc/apache2/sites-available/* 2>/dev/null || true
+rm -rf /etc/apache2/sites-enabled/* 2>/dev/null || true
+rm -f /etc/apache2/sites-enabled/000-default.conf 2>/dev/null || true
 
 # Remover logs
-rm -rf /var/log/nginx/* 2>/dev/null || true
+rm -rf /var/log/apache2/* 2>/dev/null || true
 rm -rf /var/log/mysql/* 2>/dev/null || true
-rm -rf /var/log/php8.1-fpm.log* 2>/dev/null || true
 
 # Remover dados MySQL
 rm -rf /var/lib/mysql/* 2>/dev/null || true
 
 # Remover configurações PHP
-rm -rf /etc/php/8.1/fpm/pool.d/* 2>/dev/null || true
 rm -rf /etc/php/8.1/cli/conf.d/* 2>/dev/null || true
 
 # Remover repositórios PHP

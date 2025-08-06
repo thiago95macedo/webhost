@@ -21,7 +21,7 @@ Este projeto oferece um ambiente de desenvolvimento web completo com:
 
 - **Dashboard visual** para gerenciar todos os sites
 - **Suporte multi-tecnologia**: WordPress, PHP e HTML
-- **Configuração automática** de Nginx e MySQL
+- **Configuração automática** de Apache e MySQL
 - **Sistema de permissões** otimizado
 - **Automação nativa** sem dependências externas
 
@@ -42,7 +42,7 @@ Este projeto oferece um ambiente de desenvolvimento web completo com:
 ### 🔧 Automação Completa
 - Instalação automática do WordPress
 - Configuração de banco de dados
-- Configuração de Nginx
+- Configuração de Apache
 - Atribuição automática de portas
 - Gerenciamento de permissões
 
@@ -65,7 +65,7 @@ sudo bash scripts/setup-wordpress-dev.sh
 
 O script irá:
 - Instalar todas as dependências
-- Configurar Nginx, MySQL e PHP
+- Configurar Apache, MySQL e PHP
 - Criar estrutura de diretórios
 - Configurar permissões
 - Instalar o dashboard
@@ -214,9 +214,9 @@ www-data ALL=(ALL) NOPASSWD: mysql, mysqldump, nginx, systemctl reload nginx, sy
 
 #### Dashboard não carrega
 ```bash
-# Verificar Nginx
-sudo systemctl status nginx
-sudo nginx -t
+# Verificar Apache
+sudo systemctl status apache2
+sudo apache2ctl configtest
 
 # Verificar permissões
 ls -la /opt/webhost/dashboard/
@@ -236,8 +236,8 @@ ls -la /opt/webhost/scripts/
 # Verificar portas em uso
 ss -tuln | grep :900
 
-# Verificar configurações Nginx
-ls -la /etc/nginx/sites-enabled/
+# Verificar configurações Apache
+ls -la /etc/apache2/sites-enabled/
 ```
 
 #### Problemas de permissão
@@ -250,16 +250,47 @@ sudo chmod g+s /opt/webhost
 
 ### Logs Importantes
 ```bash
-# Nginx
-sudo tail -f /var/log/nginx/error.log
-sudo tail -f /var/log/nginx/access.log
+# Apache
+sudo tail -f /var/log/apache2/error.log
+sudo tail -f /var/log/apache2/access.log
 
 # Sistema
-sudo journalctl -u nginx -f
+sudo journalctl -u apache2 -f
 sudo journalctl -u mysql -f
 ```
 
+## 🚀 Vantagens da Migração para Apache
+
+### 🔧 Flexibilidade para Desenvolvedores
+- **Arquivos .htaccess**: Cada site pode ter suas próprias configurações
+- **Controle granular**: Configurações específicas por diretório
+- **Facilidade de configuração**: Sintaxe mais intuitiva para desenvolvedores
+- **Compatibilidade**: Maior compatibilidade com frameworks e CMS
+
+### 🛡️ Segurança e Performance
+- **Headers de segurança**: Configuração automática via mod_headers
+- **Compressão**: Otimização automática via mod_deflate
+- **Cache**: Configuração inteligente de cache via mod_expires
+- **Controle de acesso**: Configurações granulares de permissões
+
+### 🔄 Gerenciamento Simplificado
+- **Comandos padrão**: a2ensite, a2dissite, apache2ctl
+- **Logs centralizados**: Todos os logs em /var/log/apache2/
+- **Configurações modulares**: Módulos habilitados automaticamente
+- **Teste de configuração**: Validação automática antes de aplicar mudanças
+
 ## 📝 Changelog
+
+### v1.4.0 - Migração para Apache
+- 🔄 Migração completa de Nginx para Apache
+- ✨ Suporte a arquivos .htaccess para cada site
+- 🔧 Configurações VirtualHost otimizadas
+- 🛡️ Headers de segurança via mod_headers
+- 📦 Compressão via mod_deflate
+- ⚡ Cache de arquivos estáticos via mod_expires
+- 🔄 Scripts atualizados para Apache (a2ensite, a2dissite)
+- 📊 Logs centralizados em /var/log/apache2/
+- 🎯 Maior flexibilidade para desenvolvedores
 
 ### v1.3.0 - Sistema Multi-Tecnologia
 - ✨ Adicionado suporte a sites PHP
@@ -286,7 +317,7 @@ sudo journalctl -u mysql -f
 
 ### v1.0.0 - Versão Inicial
 - ✨ Instalação automática do WordPress
-- 🌐 Configuração Nginx automática
+- 🌐 Configuração Apache automática
 - 🗄️ Configuração MySQL automática
 - 🔧 Scripts de gerenciamento
 - 📁 Estrutura de diretórios organizada

@@ -14,8 +14,8 @@ NC='\033[0m' # No Color
 
 # Configurações
 WEB_ROOT="/opt/webhost/sites/html"
-NGINX_SITES_AVAILABLE="/etc/nginx/sites-available"
-NGINX_SITES_ENABLED="/etc/nginx/sites-enabled"
+APACHE_SITES_AVAILABLE="/etc/apache2/sites-available"
+APACHE_SITES_ENABLED="/etc/apache2/sites-enabled"
 INFO_DIR="/opt/webhost/site-info"
 
 # Funções de log
@@ -332,43 +332,96 @@ create_site() {
     # Criar estrutura HTML
     create_html_structure "$site_name" "$port"
     
-    # Configurar Nginx
-    log "Configurando Nginx..."
-    cat > "$NGINX_SITES_AVAILABLE/$site_name" << EOF
-server {
-    listen $port;
-    server_name $domain;
-    root $WEB_ROOT/$site_name;
-    index index.html index.htm;
-
+    # Configurar Apache
+    log "Configurando Apache..."
+    cat > "$APACHE_SITES_AVAILABLE/$site_name.conf" << EOF
+<VirtualHost *:$port>
+    ServerName localhost
+    ServerAdmin webmaster@localhost
+    
+    DocumentRoot $WEB_ROOT/$site_name
+    DirectoryIndex index.html index.htm
+    
     # Logs
-    access_log /var/log/nginx/$site_name-access.log;
-    error_log /var/log/nginx/$site_name-error.log;
-
+    ErrorLog \${APACHE_LOG_DIR}/$site_name-error.log
+    CustomLog \${APACHE_LOG_DIR}/$site_name-access.log combined
+    
+    # Diretório raiz do site
+    <Directory $WEB_ROOT/$site_name>
+        Options Indexes FollowSymLinks
+        AllowOverride All
+        Require all granted
+        
+        # Headers de segurança
+        <IfModule mod_headers.c>
+            Header always set X-Frame-Options "SAMEORIGIN"
+            Header always set X-XSS-Protection "1; mode=block"
+            Header always set X-Content-Type-Options "nosniff"
+            Header always set Referrer-Policy "no-referrer-when-downgrade"
+            Header always set Content-Security-Policy "default-src 'self' http: https: data: blob: 'unsafe-inline'"
+        </IfModule>
+    </Directory>
+    
     # Configurações de segurança
-    location ~ /\. {
-        deny all;
-    }
-
-    location / {
-        try_files \$uri \$uri/ /index.html;
-    }
-
-    # Headers de segurança
-    add_header X-Frame-Options "SAMEORIGIN" always;
-    add_header X-XSS-Protection "1; mode=block" always;
-    add_header X-Content-Type-Options "nosniff" always;
-    add_header Referrer-Policy "no-referrer-when-downgrade" always;
-    add_header Content-Security-Policy "default-src 'self' http: https: data: blob: 'unsafe-inline'" always;
-}
+    <Files .htaccess>
+        Require all denied
+    </Files>
+    
+    <DirectoryMatch "^/.*/\.git/">
+        Require all denied
+    </DirectoryMatch>
+    
+    # Compressão
+    <IfModule mod_deflate.c>
+        AddOutputFilterByType DEFLATE text/plain
+        AddOutputFilterByType DEFLATE text/html
+        AddOutputFilterByType DEFLATE text/xml
+        AddOutputFilterByType DEFLATE text/css
+        AddOutputFilterByType DEFLATE application/xml
+        AddOutputFilterByType DEFLATE application/xhtml+xml
+        AddOutputFilterByType DEFLATE application/rss+xml
+        AddOutputFilterByType DEFLATE application/javascript
+        AddOutputFilterByType DEFLATE application/x-javascript
+        AddOutputFilterByType DEFLATE application/json
+        AddOutputFilterByType DEFLATE application/atom+xml
+        AddOutputFilterByType DEFLATE image/svg+xml
+    </IfModule>
+    
+    # Cache para arquivos estáticos
+    <IfModule mod_expires.c>
+        ExpiresActive On
+        ExpiresByType text/css "access plus 1 year"
+        ExpiresByType application/javascript "access plus 1 year"
+        ExpiresByType application/x-javascript "access plus 1 year"
+        ExpiresByType image/png "access plus 1 year"
+        ExpiresByType image/jpg "access plus 1 year"
+        ExpiresByType image/jpeg "access plus 1 year"
+        ExpiresByType image/gif "access plus 1 year"
+        ExpiresByType image/ico "access plus 1 year"
+        ExpiresByType image/icon "access plus 1 year"
+        ExpiresByType text/plain "access plus 1 month"
+        ExpiresByType application/pdf "access plus 1 month"
+        ExpiresByType application/x-shockwave-flash "access plus 1 month"
+        ExpiresByType image/x-icon "access plus 1 year"
+        ExpiresDefault "access plus 2 days"
+    </IfModule>
+    
+    # Configuração principal
+    <Location />
+        RewriteEngine On
+        RewriteCond %{REQUEST_FILENAME} !-f
+        RewriteCond %{REQUEST_FILENAME} !-d
+        RewriteRule ^(.*)$ /index.html [QSA,L]
+    </Location>
+</VirtualHost>
 EOF
 
     # Habilitar site
-    ln -sf "$NGINX_SITES_AVAILABLE/$site_name" "$NGINX_SITES_ENABLED/"
+    a2ensite "$site_name"
     
-    # Testar e recarregar Nginx
-    nginx -t
-    systemctl reload nginx
+    # Testar e recarregar Apache
+    apache2ctl configtest
+    systemctl reload apache2
     
     # Criar arquivo de informações
     log "Criando arquivo de informações..."
@@ -378,7 +431,7 @@ INFORMAÇÕES DO SITE HTML: $site_name
 
 DATA DE CRIAÇÃO: $(date '+%Y-%m-%d %H:%M:%S')
 TECNOLOGIA: HTML Puro
-SERVIDOR: Nginx
+SERVIDOR: Apache
 
 URL DO SITE:
 - Principal: http://localhost:$port
@@ -387,24 +440,24 @@ ESTRUTURA DE DIRETÓRIOS:
 - Document Root: $WEB_ROOT/$site_name
 - Arquivo Principal: $WEB_ROOT/$site_name/index.html
 
-CONFIGURAÇÕES NGINX:
-- Arquivo: /etc/nginx/sites-available/$site_name
+CONFIGURAÇÕES APACHE:
+- Arquivo: /etc/apache2/sites-available/$site_name.conf
 - Porta: $port
 - Status: Ativo
 
 LOGS:
-- Nginx Access: /var/log/nginx/$site_name-access.log
-- Nginx Error: /var/log/nginx/$site_name-error.log
+- Apache Access: /var/log/apache2/$site_name-access.log
+- Apache Error: /var/log/apache2/$site_name-error.log
 
 COMANDOS ÚTEIS:
 - Editar index: nano $WEB_ROOT/$site_name/index.html
-- Ver status: sudo systemctl status nginx
-- Ver logs Nginx: tail -f /var/log/nginx/$site_name-error.log
+- Ver status: sudo systemctl status apache2
+- Ver logs Apache: tail -f /var/log/apache2/$site_name-error.log
 
 TECNOLOGIAS UTILIZADAS:
 - HTML5
 - CSS3
-- Nginx
+- Apache
 - Ubuntu/Debian
 
 NOTAS:
@@ -445,13 +498,13 @@ delete_site() {
         error "Site '$site_name' não encontrado!"
     fi
     
-    # Desabilitar site no Nginx
-    log "Desabilitando site no Nginx..."
-    rm -f "$NGINX_SITES_ENABLED/$site_name"
+    # Desabilitar site no Apache
+    log "Desabilitando site no Apache..."
+    a2dissite "$site_name" 2>/dev/null || true
     
-    # Remover configuração Nginx
-    log "Removendo configuração Nginx..."
-    rm -f "$NGINX_SITES_AVAILABLE/$site_name"
+    # Remover configuração Apache
+    log "Removendo configuração Apache..."
+    rm -f "$APACHE_SITES_AVAILABLE/$site_name.conf"
     
     # Remover diretório do site
     log "Removendo arquivos do site..."
@@ -460,9 +513,9 @@ delete_site() {
     # Remover arquivo de informações
     rm -f "$INFO_DIR/$site_name-info.txt"
     
-    # Recarregar Nginx
-    nginx -t
-    systemctl reload nginx
+    # Recarregar Apache
+    apache2ctl configtest
+    systemctl reload apache2
     
     log "Site HTML '$site_name' deletado com sucesso!"
 }
@@ -480,10 +533,10 @@ list_sites() {
     for site_dir in "$WEB_ROOT"/*; do
         if [ -d "$site_dir" ]; then
             local site_name=$(basename "$site_dir")
-            local port=$(grep -h "listen" "$NGINX_SITES_AVAILABLE/$site_name" 2>/dev/null | awk '{print $2}' | sed 's/;$//' || echo "80")
+            local port=$(grep -h "VirtualHost \*:" "$APACHE_SITES_AVAILABLE/$site_name.conf" 2>/dev/null | awk '{print $2}' | sed 's/:$//' || echo "80")
             local status="Desabilitado"
             
-            if [ -L "$NGINX_SITES_ENABLED/$site_name" ]; then
+            if [ -f "$APACHE_SITES_ENABLED/$site_name.conf" ]; then
                 status="Ativo"
             fi
             
@@ -500,13 +553,13 @@ enable_site() {
     
     log "Habilitando site HTML: $site_name"
     
-    if [ ! -f "$NGINX_SITES_AVAILABLE/$site_name" ]; then
+    if [ ! -f "$APACHE_SITES_AVAILABLE/$site_name.conf" ]; then
         error "Configuração do site '$site_name' não encontrada!"
     fi
     
-    ln -sf "$NGINX_SITES_AVAILABLE/$site_name" "$NGINX_SITES_ENABLED/"
-    nginx -t
-    systemctl reload nginx
+    a2ensite "$site_name"
+    apache2ctl configtest
+    systemctl reload apache2
     
     log "Site HTML '$site_name' habilitado com sucesso!"
 }
@@ -519,9 +572,9 @@ disable_site() {
     
     log "Desabilitando site HTML: $site_name"
     
-    rm -f "$NGINX_SITES_ENABLED/$site_name"
-    nginx -t
-    systemctl reload nginx
+    a2dissite "$site_name"
+    apache2ctl configtest
+    systemctl reload apache2
     
     log "Site HTML '$site_name' desabilitado com sucesso!"
 }
