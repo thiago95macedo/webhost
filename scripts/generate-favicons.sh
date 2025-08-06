@@ -27,21 +27,21 @@ fi
 echo "📱 Gerando favicon.ico (32x32)..."
 convert "$SVG_FILE" -resize 32x32 "$DASHBOARD_DIR/favicon.ico"
 
-# Gerar favicon.png (32x32)
-echo "🖼️  Gerando favicon.png (32x32)..."
-convert "$SVG_FILE" -resize 32x32 "$DASHBOARD_DIR/favicon.png"
+# Gerar favicon.png (32x32) - transparente
+echo "🖼️  Gerando favicon.png (32x32) - transparente..."
+convert "$SVG_FILE" -background transparent -resize 32x32 "$DASHBOARD_DIR/favicon.png"
 
-# Gerar apple-touch-icon.png (180x180)
-echo "🍎 Gerando apple-touch-icon.png (180x180)..."
-convert "$SVG_FILE" -resize 180x180 "$DASHBOARD_DIR/apple-touch-icon.png"
+# Gerar apple-touch-icon.png (180x180) - transparente
+echo "🍎 Gerando apple-touch-icon.png (180x180) - transparente..."
+convert "$SVG_FILE" -background transparent -resize 180x180 "$DASHBOARD_DIR/apple-touch-icon.png"
 
-# Gerar favicon-16x16.png
-echo "🔍 Gerando favicon-16x16.png..."
-convert "$SVG_FILE" -resize 16x16 "$DASHBOARD_DIR/favicon-16x16.png"
+# Gerar favicon-16x16.png - transparente
+echo "🔍 Gerando favicon-16x16.png - transparente..."
+convert "$SVG_FILE" -background transparent -resize 16x16 "$DASHBOARD_DIR/favicon-16x16.png"
 
-# Gerar favicon-32x32.png
-echo "🔍 Gerando favicon-32x32.png..."
-convert "$SVG_FILE" -resize 32x32 "$DASHBOARD_DIR/favicon-32x32.png"
+# Gerar favicon-32x32.png - transparente
+echo "🔍 Gerando favicon-32x32.png - transparente..."
+convert "$SVG_FILE" -background transparent -resize 32x32 "$DASHBOARD_DIR/favicon-32x32.png"
 
 echo "✅ Favicons gerados com sucesso!"
 echo "📁 Arquivos criados:"
