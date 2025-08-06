@@ -68,7 +68,7 @@ check_permissions() {
     
     # Verificar se o diretório existe
     if [ ! -d "/opt/webhost" ]; then
-        error "Diretório /opt/webhost não encontrado. Execute o setup primeiro."
+        error "Diretório /opt/webhost não encontrado. Execute o script setup-ambiente-dev.sh primeiro."
     fi
     
     # Verificar se o usuário atual está no grupo sudo
@@ -84,7 +84,8 @@ check_permissions() {
 find_available_port() {
     local port=9001
     while [ $port -le 10000 ]; do
-        if ! ss -tuln | grep -q ":$port "; then
+        # Verificar se a porta não está em uso E não está configurada no Apache
+        if ! ss -tuln | grep -q ":$port " && ! grep -q "Listen $port" /etc/apache2/ports.conf; then
             echo $port
             return 0
         fi
@@ -258,7 +259,7 @@ create_html_structure() {
             </div>
             <div class="info-card">
                 <h3>Servidor Web</h3>
-                <p>Nginx</p>
+                <p>Apache</p>
             </div>
         </div>
         
@@ -267,7 +268,7 @@ create_html_structure() {
             <ul class="tech-list">
                 <li class="tech-item">HTML5</li>
                 <li class="tech-item">CSS3</li>
-                <li class="tech-item">Nginx</li>
+                <li class="tech-item">Apache</li>
                 <li class="tech-item">Ubuntu/Debian</li>
             </ul>
         </div>
@@ -416,6 +417,12 @@ create_site() {
 </VirtualHost>
 EOF
 
+    # Configurar porta no Apache se não existir
+    if ! grep -q "Listen $port" /etc/apache2/ports.conf; then
+        log "Adicionando porta $port ao Apache..."
+        echo "Listen $port" >> /etc/apache2/ports.conf
+    fi
+    
     # Habilitar site
     a2ensite "$site_name"
     
@@ -498,6 +505,9 @@ delete_site() {
         error "Site '$site_name' não encontrado!"
     fi
     
+    # Obter a porta do site ANTES de remover a configuração
+    local port=$(grep -h "VirtualHost \*:" "$APACHE_SITES_AVAILABLE/$site_name.conf" 2>/dev/null | awk '{print $2}' | sed 's/[:>*]//g' || echo "")
+    
     # Desabilitar site no Apache
     log "Desabilitando site no Apache..."
     a2dissite "$site_name" 2>/dev/null || true
@@ -512,6 +522,12 @@ delete_site() {
     
     # Remover arquivo de informações
     rm -f "$INFO_DIR/$site_name-info.txt"
+    
+    # Remover a porta do ports.conf se existir e não for 80 ou 443
+    if [ -n "$port" ] && [ "$port" != "80" ] && [ "$port" != "443" ]; then
+        log "Removendo porta $port do ports.conf..."
+        sed -i "/^Listen $port$/d" /etc/apache2/ports.conf
+    fi
     
     # Recarregar Apache
     apache2ctl configtest

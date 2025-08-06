@@ -79,7 +79,7 @@ check_permissions() {
     
     # Verificar se o diretório existe
     if [ ! -d "/opt/webhost" ]; then
-        error "Diretório /opt/webhost não existe. Execute o script setup-wordpress-dev.sh primeiro."
+        error "Diretório /opt/webhost não existe. Execute o script setup-ambiente-dev.sh primeiro."
     fi
     
     # Verificar se o grupo proprietário é sudo
@@ -111,7 +111,8 @@ generate_password() {
 find_available_port() {
     local port=9001
     while [ $port -le 10000 ]; do
-        if ! ss -tuln | grep -q ":$port "; then
+        # Verificar se a porta não está em uso E não está configurada no Apache
+        if ! ss -tuln | grep -q ":$port " && ! grep -q "Listen $port" /etc/apache2/ports.conf; then
             echo $port
             return 0
         fi
@@ -126,7 +127,7 @@ install_wordpress() {
     local port=$2
     local site_path="$WEB_ROOT/$site_name"
 
-    # Aguardar um pouco para o Nginx carregar
+    # Aguardar um pouco para o Apache carregar
     sleep 2
 
     log "Iniciando instalação automática do WordPress..."
@@ -418,7 +419,7 @@ create_site() {
     chown -R www-data:sudo "$WEB_ROOT/$site_name"
     chmod -R 775 "$WEB_ROOT/$site_name"
     
-    # Garantir que o diretório pai tenha permissões corretas para o Nginx
+    # Garantir que o diretório pai tenha permissões corretas para o Apache
     local parent_dir=$(dirname "$WEB_ROOT")
     if [ -d "$parent_dir" ]; then
         chmod 775 "$parent_dir"
@@ -522,6 +523,12 @@ create_site() {
 </VirtualHost>
 EOF
     
+    # Configurar porta no Apache se não existir
+    if ! grep -q "Listen $port" /etc/apache2/ports.conf; then
+        log "Adicionando porta $port ao Apache..."
+        echo "Listen $port" >> /etc/apache2/ports.conf
+    fi
+    
     # Habilitar site
     a2ensite "$site_name"
     
@@ -617,6 +624,9 @@ delete_site() {
         sudo mysql -e "FLUSH PRIVILEGES;"
     fi
     
+    # Obter a porta do site ANTES de remover a configuração
+    local port=$(grep -h "VirtualHost \*:" "$APACHE_SITES_AVAILABLE/$site_name.conf" 2>/dev/null | awk '{print $2}' | sed 's/[:>*]//g' || echo "")
+    
     # Deletar arquivos
     log "Deletando arquivos..."
     rm -rf "$WEB_ROOT/$site_name"
@@ -635,15 +645,15 @@ delete_site() {
     # Deletar arquivo de informações
     rm -f "$INFO_DIR/$site_name-info.txt"
     
+    # Remover a porta do ports.conf se existir e não for 80 ou 443
+    if [ -n "$port" ] && [ "$port" != "80" ] && [ "$port" != "443" ]; then
+        log "Removendo porta $port do ports.conf..."
+        sed -i "/^Listen $port$/d" /etc/apache2/ports.conf
+    fi
+    
     # Testar e reiniciar Apache
     apache2ctl configtest
     systemctl reload apache2
-    
-    # Verificar se a porta foi liberada
-    local port=$(grep -h "VirtualHost \*:" "$APACHE_SITES_AVAILABLE/$site_name.conf" 2>/dev/null | awk '{print $2}' | sed 's/:$//' || echo "")
-    if [ -n "$port" ]; then
-        log "Porta $port liberada e disponível para novos sites"
-    fi
     
     log "Site $site_name deletado com sucesso!"
 }

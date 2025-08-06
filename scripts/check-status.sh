@@ -84,7 +84,7 @@ check_wordpress_sites() {
         done
     fi
     
-    # Verificar sites do wp-multi.sh
+    # Verificar sites do ambiente multi-tecnologia
     if [ -d "$multi_sites_root" ] && [ "$(ls -A $multi_sites_root 2>/dev/null)" ]; then
         for site_dir in "$multi_sites_root"/*; do
             if [ -d "$site_dir" ] && [ -f "$site_dir/wp-config.php" ]; then

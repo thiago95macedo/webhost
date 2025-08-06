@@ -38,8 +38,8 @@ try {
 function getDetailedSiteInfo($siteName) {
     $webRoot = '/opt/webhost/sites/wordpress';
     $infoDir = '/opt/webhost/site-info';
-    $nginxSitesEnabled = '/etc/nginx/sites-enabled';
-    $nginxSitesAvailable = '/etc/nginx/sites-available';
+    $apacheSitesEnabled = '/etc/apache2/sites-enabled';
+$apacheSitesAvailable = '/etc/apache2/sites-available';
     
     $siteDir = $webRoot . '/' . $siteName;
     $wpConfigFile = $siteDir . '/wp-config.php';
@@ -66,7 +66,7 @@ function getDetailedSiteInfo($siteName) {
             'user' => 'admin',
             'email' => 'admin@localhost'
         ],
-        'nginx_config' => [
+        'apache_config' => [
             'enabled' => false,
             'config_file' => '',
             'log_files' => []
@@ -80,11 +80,11 @@ function getDetailedSiteInfo($siteName) {
     ];
     
     // Check if site is active
-    $nginxConfig = $nginxSitesEnabled . '/' . $siteName;
-    $siteInfo['active'] = is_link($nginxConfig);
-    
-    // Get port from nginx config
-    $siteInfo['port'] = getPortFromNginxConfig($siteName);
+    $apacheConfig = $apacheSitesEnabled . '/' . $siteName . '.conf';
+$siteInfo['active'] = file_exists($apacheConfig);
+
+// Get port from Apache config
+$siteInfo['port'] = getPortFromApacheConfig($siteName);
     
     // Build URL
     $siteInfo['url'] = 'http://localhost:' . $siteInfo['port'];
@@ -106,17 +106,17 @@ function getDetailedSiteInfo($siteName) {
         }
     }
     
-    // Get nginx config info
-    $nginxConfigFile = $nginxSitesAvailable . '/' . $siteName;
-    if (file_exists($nginxConfigFile)) {
-        $siteInfo['nginx_config']['config_file'] = $nginxConfigFile;
-        $siteInfo['nginx_config']['enabled'] = $siteInfo['active'];
-        
-        // Get log files
-        $accessLog = "/var/log/nginx/$siteName-access.log";
-        $errorLog = "/var/log/nginx/$siteName-error.log";
-        
-        $siteInfo['nginx_config']['log_files'] = [
+    // Get Apache config info
+$apacheConfigFile = $apacheSitesAvailable . '/' . $siteName . '.conf';
+if (file_exists($apacheConfigFile)) {
+    $siteInfo['apache_config']['config_file'] = $apacheConfigFile;
+    $siteInfo['apache_config']['enabled'] = $siteInfo['active'];
+    
+    // Get log files
+    $accessLog = "/var/log/apache2/$siteName-access.log";
+    $errorLog = "/var/log/apache2/$siteName-error.log";
+    
+    $siteInfo['apache_config']['log_files'] = [
             'access' => file_exists($accessLog) ? $accessLog : null,
             'error' => file_exists($errorLog) ? $errorLog : null
         ];
@@ -131,16 +131,16 @@ function getDetailedSiteInfo($siteName) {
     return $siteInfo;
 }
 
-function getPortFromNginxConfig($siteName) {
-    $nginxSitesAvailable = '/etc/nginx/sites-available';
-    $configFile = $nginxSitesAvailable . '/' . $siteName;
+function getPortFromApacheConfig($siteName) {
+$apacheSitesAvailable = '/etc/apache2/sites-available';
+$configFile = $apacheSitesAvailable . '/' . $siteName . '.conf';
     
     if (!file_exists($configFile)) {
         return '80';
     }
     
     $configContent = file_get_contents($configFile);
-    if (preg_match('/listen\s+(\d+);/', $configContent, $matches)) {
+    if (preg_match('/<VirtualHost\s+\*:(\d+)>/', $configContent, $matches)) {
         return $matches[1];
     }
     

@@ -64,7 +64,7 @@ class WordPressDashboard {
 
     async loadWordPressSites() {
         try {
-            const response = await fetch('api/sites.php');
+            const response = await fetch('api/sites.php?t=' + Date.now());
             const data = await response.json();
             
             if (data.success) {
@@ -80,7 +80,7 @@ class WordPressDashboard {
 
     async loadPhpSites() {
         try {
-            const response = await fetch('api/php-sites.php');
+            const response = await fetch('api/php-sites.php?t=' + Date.now());
             const data = await response.json();
             
             if (data.success) {
@@ -96,7 +96,7 @@ class WordPressDashboard {
 
     async loadHtmlSites() {
         try {
-            const response = await fetch('api/html-sites.php');
+            const response = await fetch('api/html-sites.php?t=' + Date.now());
             const data = await response.json();
             
             if (data.success) {
@@ -668,7 +668,10 @@ function deletePhpSite(siteName) {
                         <p>O site "${siteName}" foi removido do sistema.</p>
                     </div>
                 `);
-                dashboard.loadPhpSites();
+                // Pequeno delay para garantir que a atualização aconteça
+                setTimeout(() => {
+                    dashboard.loadPhpSites();
+                }, 500);
             } else {
                 dashboard.showError(data.message);
             }
@@ -698,7 +701,10 @@ function deleteHtmlSite(siteName) {
                         <p>O site "${siteName}" foi removido do sistema.</p>
                     </div>
                 `);
-                dashboard.loadHtmlSites();
+                // Pequeno delay para garantir que a atualização aconteça
+                setTimeout(() => {
+                    dashboard.loadHtmlSites();
+                }, 500);
             } else {
                 dashboard.showError(data.message);
             }
@@ -714,7 +720,7 @@ function showSystemStatus() {
         <div class="system-status">
             <div class="status-item">
                 <i class="fas fa-server"></i>
-                <span>Nginx: <span class="status-active">Ativo</span></span>
+                <span>Apache: <span class="status-active">Ativo</span></span>
             </div>
             <div class="status-item">
                 <i class="fas fa-database"></i>
@@ -736,7 +742,7 @@ function showLogs() {
     dashboard.showModal('Logs do Sistema', `
         <div class="logs-container">
             <div class="log-section">
-                <h4>Nginx Error Log</h4>
+                <h4>Apache Error Log</h4>
                 <pre class="log-content">Carregando logs...</pre>
             </div>
             <div class="log-section">
@@ -757,7 +763,7 @@ async function loadLogs() {
         
         if (data.success) {
             const logContents = document.querySelectorAll('.log-content');
-            if (logContents[0]) logContents[0].textContent = data.logs.nginx || 'Nenhum log disponível';
+            if (logContents[0]) logContents[0].textContent = data.logs.apache || 'Nenhum log disponível';
             if (logContents[1]) logContents[1].textContent = data.logs.mysql || 'Nenhum log disponível';
         }
     } catch (error) {

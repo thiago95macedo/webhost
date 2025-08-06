@@ -56,7 +56,7 @@ latest.zip
 wordpress/
 
 # Arquivos de configuração local
-nginx.conf.local
+apache2.conf.local
 mysql.conf.local
 
 # Arquivos de senha
@@ -72,7 +72,7 @@ sess_*
 
 
 # Arquivos de configuração do sistema
-/etc/nginx/sites-available/*
-/etc/nginx/sites-enabled/*
-/var/log/nginx/*
+/etc/apache2/sites-available/*
+/etc/apache2/sites-enabled/*
+/var/log/apache2/*
 /var/log/mysql/*

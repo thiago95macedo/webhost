@@ -74,7 +74,7 @@ try {
 function getHtmlSiteInfo($siteName) {
     $webRoot = '/opt/webhost/sites/html';
     $infoDir = '/opt/webhost/site-info';
-    $nginxSitesEnabled = '/etc/nginx/sites-enabled';
+    $apacheSitesEnabled = '/etc/apache2/sites-enabled';
     
     $siteDir = $webRoot . '/' . $siteName;
     $infoFile = $infoDir . '/' . $siteName . '-info.txt';
@@ -89,11 +89,11 @@ function getHtmlSiteInfo($siteName) {
     ];
     
     // Check if site is active
-    $nginxConfig = $nginxSitesEnabled . '/' . $siteName;
-    $siteInfo['active'] = is_link($nginxConfig);
+    $apacheConfig = $apacheSitesEnabled . '/' . $siteName . '.conf';
+    $siteInfo['active'] = file_exists($apacheConfig);
     
-    // Get port from nginx config
-    $siteInfo['port'] = getPortFromNginxConfig($siteName);
+    // Get port from Apache config
+    $siteInfo['port'] = getPortFromApacheConfig($siteName);
     
     // Build URL
     $siteInfo['url'] = 'http://localhost:' . $siteInfo['port'];
@@ -101,16 +101,16 @@ function getHtmlSiteInfo($siteName) {
     return $siteInfo;
 }
 
-function getPortFromNginxConfig($siteName) {
-    $nginxSitesAvailable = '/etc/nginx/sites-available';
-    $configFile = $nginxSitesAvailable . '/' . $siteName;
+function getPortFromApacheConfig($siteName) {
+    $apacheSitesAvailable = '/etc/apache2/sites-available';
+    $configFile = $apacheSitesAvailable . '/' . $siteName . '.conf';
     
     if (!file_exists($configFile)) {
         return '80';
     }
     
     $configContent = file_get_contents($configFile);
-    if (preg_match('/listen\s+(\d+);/', $configContent, $matches)) {
+    if (preg_match('/<VirtualHost\s+\*:(\d+)>/', $configContent, $matches)) {
         return $matches[1];
     }
     

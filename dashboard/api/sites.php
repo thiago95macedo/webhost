@@ -3,6 +3,9 @@ header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET');
 header('Access-Control-Allow-Headers: Content-Type');
+header('Cache-Control: no-cache, no-store, must-revalidate');
+header('Pragma: no-cache');
+header('Expires: 0');
 
 try {
     $sites = getWordPressSites();
@@ -26,7 +29,7 @@ function getWordPressSites() {
     $sites = [];
     $webRoot = '/opt/webhost/sites/wordpress';
     $infoDir = '/opt/webhost/site-info';
-    $nginxSitesEnabled = '/etc/nginx/sites-enabled';
+    $apacheSitesEnabled = '/etc/apache2/sites-enabled';
     
     // Check if web root directory exists
     if (!is_dir($webRoot)) {
@@ -63,12 +66,12 @@ function getWordPressSites() {
             ]
         ];
         
-        // Check if site is active (nginx enabled)
-        $nginxConfig = $nginxSitesEnabled . '/' . $siteName;
-        $site['active'] = is_link($nginxConfig);
+        // Check if site is active (Apache enabled)
+        $apacheConfig = $apacheSitesEnabled . '/' . $siteName . '.conf';
+        $site['active'] = file_exists($apacheConfig);
         
-        // Get port from nginx config
-        $site['port'] = getPortFromNginxConfig($siteName);
+        // Get port from Apache config
+        $site['port'] = getPortFromApacheConfig($siteName);
         
         // Build URL
         $site['url'] = 'http://localhost:' . $site['port'];
@@ -102,16 +105,16 @@ function getWordPressSites() {
     return $sites;
 }
 
-function getPortFromNginxConfig($siteName) {
-    $nginxSitesAvailable = '/etc/nginx/sites-available';
-    $configFile = $nginxSitesAvailable . '/' . $siteName;
+function getPortFromApacheConfig($siteName) {
+    $apacheSitesAvailable = '/etc/apache2/sites-available';
+    $configFile = $apacheSitesAvailable . '/' . $siteName . '.conf';
     
     if (!file_exists($configFile)) {
         return '80';
     }
     
     $configContent = file_get_contents($configFile);
-    if (preg_match('/listen\s+(\d+);/', $configContent, $matches)) {
+    if (preg_match('/<VirtualHost\s+\*:(\d+)>/', $configContent, $matches)) {
         return $matches[1];
     }
     

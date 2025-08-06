@@ -6,7 +6,7 @@ header('Access-Control-Allow-Headers: Content-Type');
 
 try {
     $logs = [
-        'nginx' => getNginxLogs(),
+        'apache' => getApacheLogs(),
         'mysql' => getMySQLLogs(),
         'system' => getSystemLogs()
     ];
@@ -25,23 +25,23 @@ try {
     ]);
 }
 
-function getNginxLogs() {
+function getApacheLogs() {
     $logs = [];
     
-    // Nginx error log
-    $errorLog = '/var/log/nginx/error.log';
+    // Apache error log
+    $errorLog = '/var/log/apache2/error.log';
     if (file_exists($errorLog) && is_readable($errorLog)) {
         $logs['error'] = getLastLines($errorLog, 50);
     } else {
-        $logs['error'] = 'Log de erro do Nginx não disponível';
+        $logs['error'] = 'Log de erro do Apache não disponível';
     }
     
-    // Nginx access log
-    $accessLog = '/var/log/nginx/access.log';
+    // Apache access log
+    $accessLog = '/var/log/apache2/access.log';
     if (file_exists($accessLog) && is_readable($accessLog)) {
         $logs['access'] = getLastLines($accessLog, 30);
     } else {
-        $logs['access'] = 'Log de acesso do Nginx não disponível';
+        $logs['access'] = 'Log de acesso do Apache não disponível';
     }
     
     return $logs;

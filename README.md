@@ -60,7 +60,7 @@ git clone <repository-url>
 cd webhost
 
 # Execute o script de instalação
-sudo bash scripts/setup-wordpress-dev.sh
+sudo bash scripts/setup-ambiente-dev.sh
 ```
 
 O script irá:
@@ -85,9 +85,12 @@ O script irá:
 │   └── html/                 # Sites HTML
 ├── site-info/                # Informações dos sites
 ├── scripts/                  # Scripts de gerenciamento
+│   ├── setup-ambiente-dev.sh # Instalação do ambiente
+│   ├── cleanup-ambiente-dev.sh # Limpeza do ambiente
 │   ├── wp-multi.sh          # Gerenciamento WordPress
 │   ├── php-multi.sh         # Gerenciamento PHP
-│   └── html-multi.sh        # Gerenciamento HTML
+│   ├── html-multi.sh        # Gerenciamento HTML
+│   └── check-status.sh      # Verificação de status
 └── logs/                     # Logs do sistema
 ```
 
@@ -108,7 +111,7 @@ O script irá:
 O dashboard executa com permissões `www-data` e tem acesso sudo para:
 - Executar scripts de criação/deleção
 - Gerenciar arquivos dos sites
-- Configurar Nginx
+- Configurar Apache
 - Operações de banco de dados
 
 ## 🌐 Tipos de Sites
@@ -138,7 +141,7 @@ O dashboard executa com permissões `www-data` e tem acesso sudo para:
 - Nome do site
 - Domínio (opcional, padrão: localhost)
 - Template PHP básico
-- Configuração Nginx otimizada
+- Configuração Apache otimizada
 
 ### 3. Sites HTML
 - **Tecnologia**: HTML5 estático
@@ -151,7 +154,7 @@ O dashboard executa com permissões `www-data` e tem acesso sudo para:
 - Nome do site
 - Domínio (opcional, padrão: localhost)
 - Template HTML5 básico
-- Configuração Nginx para arquivos estáticos
+- Configuração Apache para arquivos estáticos
 
 ## ⚙️ Automação WordPress
 
@@ -199,7 +202,7 @@ usermod -a -G sudo,www-data $CURRENT_USER
 www-data ALL=(ALL) NOPASSWD: SETENV: /opt/webhost/scripts/wp-multi.sh
 www-data ALL=(ALL) NOPASSWD: SETENV: /opt/webhost/scripts/php-multi.sh
 www-data ALL=(ALL) NOPASSWD: SETENV: /opt/webhost/scripts/html-multi.sh
-www-data ALL=(ALL) NOPASSWD: mysql, mysqldump, nginx, systemctl reload nginx, systemctl restart nginx
+www-data ALL=(ALL) NOPASSWD: mysql, mysqldump, apache2ctl, systemctl reload apache2, systemctl restart apache2
 ```
 
 ### Benefícios
@@ -257,6 +260,18 @@ sudo tail -f /var/log/apache2/access.log
 # Sistema
 sudo journalctl -u apache2 -f
 sudo journalctl -u mysql -f
+```
+
+### Comandos Úteis
+```bash
+# Verificar status do ambiente
+sudo ./scripts/check-status.sh
+
+# Limpar ambiente completamente
+sudo ./scripts/cleanup-ambiente-dev.sh
+
+# Reinstalar ambiente
+sudo ./scripts/setup-ambiente-dev.sh
 ```
 
 ## 🚀 Vantagens da Migração para Apache

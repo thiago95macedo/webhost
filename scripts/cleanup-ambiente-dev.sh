@@ -89,10 +89,10 @@ log "Limpando cache do apt..."
 apt clean
 apt autoclean
 
-# Remover usuários e grupos criados (não remover www-data pois é necessário para Nginx)
+# Remover usuários e grupos criados (não remover www-data pois é necessário para Apache)
 log "Removendo usuários e grupos..."
-# userdel -r www-data 2>/dev/null || true  # Não remover www-data - necessário para Nginx
-# groupdel www-data 2>/dev/null || true    # Não remover www-data - necessário para Nginx
+# userdel -r www-data 2>/dev/null || true  # Não remover www-data - necessário para Apache
+# groupdel www-data 2>/dev/null || true    # Não remover www-data - necessário para Apache
 
 # Remover diretórios temporários
 log "Limpando diretórios temporários..."
@@ -114,9 +114,9 @@ if [ -d "/var/www/html" ] && [ "$(ls -A /var/www/html 2>/dev/null)" ]; then
     ls -la /var/www/html
 fi
 
-if [ -d "/etc/nginx/sites-available" ] && [ "$(ls -A /etc/nginx/sites-available 2>/dev/null)" ]; then
-    warn "Ainda existem configurações Nginx:"
-    ls -la /etc/nginx/sites-available
+if [ -d "/etc/apache2/sites-available" ] && [ "$(ls -A /etc/apache2/sites-available 2>/dev/null)" ]; then
+    warn "Ainda existem configurações Apache:"
+    ls -la /etc/apache2/sites-available
 fi
 
 if [ -d "/var/lib/mysql" ] && [ "$(ls -A /var/lib/mysql 2>/dev/null)" ]; then
@@ -126,8 +126,8 @@ fi
 
 # Verificar processos
 log "Verificando processos..."
-if pgrep -x "nginx" > /dev/null; then
-    warn "Processo Nginx ainda está rodando"
+if pgrep -x "apache2" > /dev/null; then
+    warn "Processo Apache ainda está rodando"
 fi
 
 if pgrep -x "mysqld" > /dev/null; then
