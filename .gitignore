@@ -30,15 +30,8 @@ backups/
 # Informações de sites WordPress locais (contêm dados sensíveis)
 site-info/
 
-# Arquivos sensíveis dos projetos (sites/)
-sites/*/wp-config.php
-sites/*/wp-content/uploads/
-sites/*/wp-content/cache/
-sites/*/wp-content/backup-db/
-sites/*/wp-content/backups/
-sites/*/.env
-sites/*/error_log
-sites/*/access_log
+# Diretório de sites - cada projeto tem seu próprio controle de versão
+sites/
 
 # Arquivos de cache (gerais)
 cache/
