@@ -444,7 +444,7 @@ create_site() {
     
     DocumentRoot $WEB_ROOT/$site_name
     DirectoryIndex index.php index.html
-    
+
     # Logs
     ErrorLog \${APACHE_LOG_DIR}/$site_name-error.log
     CustomLog \${APACHE_LOG_DIR}/$site_name-access.log combined
@@ -599,11 +599,11 @@ delete_site() {
     
     # Confirmar exclusão (pular se AUTO_CONFIRM=1)
     if [ "$AUTO_CONFIRM" != "1" ]; then
-        read -p "Tem certeza que deseja deletar o site $site_name? (y/N): " -n 1 -r
-        echo
-        if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-            log "Operação cancelada"
-            exit 0
+    read -p "Tem certeza que deseja deletar o site $site_name? (y/N): " -n 1 -r
+    echo
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        log "Operação cancelada"
+        exit 0
         fi
     else
         log "Confirmação automática ativada"
@@ -668,7 +668,7 @@ list_sites() {
         return
     fi
     
-            for site_dir in "$WEB_ROOT"/*; do
+    for site_dir in "$WEB_ROOT"/*; do
         if [ -d "$site_dir" ] && [ -f "$site_dir/wp-config.php" ]; then
             site_name=$(basename "$site_dir")
             port=$(grep -h "VirtualHost \*:" "$APACHE_SITES_AVAILABLE/$site_name.conf" 2>/dev/null | awk '{print $2}' | sed 's/:$//' || echo "80")
