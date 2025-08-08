@@ -367,19 +367,19 @@ body {
 }
 
 .status-active {
-    color: var(--success);
+    /* Removido - cor será aplicada diretamente ao ícone */
 }
 
 .status-active:hover {
-    color: #15803d;
+    /* Removido - cor será aplicada diretamente ao ícone */
 }
 
 .status-inactive {
-    color: var(--danger);
+    /* Removido - cor será aplicada diretamente ao ícone */
 }
 
 .status-inactive:hover {
-    color: #b91c1c;
+    /* Removido - cor será aplicada diretamente ao ícone */
 }
 
 .site-info {

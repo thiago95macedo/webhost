@@ -174,16 +174,16 @@ class WordPressDashboard {
     }
 
     createSiteCard(site) {
-        const statusClass = site.active ? 'status-active' : 'status-inactive';
         const toggleAction = site.active ? 'disable' : 'enable';
         const toggleIcon = site.active ? 'fas fa-toggle-on' : 'fas fa-toggle-off';
+        const iconColor = site.active ? 'var(--success)' : 'var(--danger)';
         
         return `
             <div class="site-card">
                 <div class="site-header">
                     <div class="site-name">${site.name}</div>
-                    <button class="site-status ${statusClass}" onclick="toggleSiteStatus('${site.name}', '${toggleAction}', this)" title="Clique para ${site.active ? 'desativar' : 'ativar'}">
-                        <i class="${toggleIcon}"></i>
+                    <button class="site-status" onclick="toggleSiteStatus('${site.name}', '${toggleAction}', this)" title="Clique para ${site.active ? 'desativar' : 'ativar'}">
+                        <i class="${toggleIcon}" style="color: ${iconColor}"></i>
                     </button>
                 </div>
                 
@@ -217,16 +217,16 @@ class WordPressDashboard {
     }
 
     createPhpSiteCard(site) {
-        const statusClass = site.active ? 'status-active' : 'status-inactive';
         const toggleAction = site.active ? 'disable' : 'enable';
         const toggleIcon = site.active ? 'fas fa-toggle-on' : 'fas fa-toggle-off';
+        const iconColor = site.active ? 'var(--success)' : 'var(--danger)';
         
         return `
             <div class="site-card">
                 <div class="site-header">
                     <div class="site-name">${site.name}</div>
-                    <button class="site-status ${statusClass}" onclick="toggleSiteStatus('${site.name}', '${toggleAction}', this)" title="Clique para ${site.active ? 'desativar' : 'ativar'}">
-                        <i class="${toggleIcon}"></i>
+                    <button class="site-status" onclick="toggleSiteStatus('${site.name}', '${toggleAction}', this)" title="Clique para ${site.active ? 'desativar' : 'ativar'}">
+                        <i class="${toggleIcon}" style="color: ${iconColor}"></i>
                     </button>
                 </div>
                 
@@ -252,16 +252,16 @@ class WordPressDashboard {
     }
 
     createHtmlSiteCard(site) {
-        const statusClass = site.active ? 'status-active' : 'status-inactive';
         const toggleAction = site.active ? 'disable' : 'enable';
         const toggleIcon = site.active ? 'fas fa-toggle-on' : 'fas fa-toggle-off';
+        const iconColor = site.active ? 'var(--success)' : 'var(--danger)';
         
         return `
             <div class="site-card">
                 <div class="site-header">
                     <div class="site-name">${site.name}</div>
-                    <button class="site-status ${statusClass}" onclick="toggleSiteStatus('${site.name}', '${toggleAction}', this)" title="Clique para ${site.active ? 'desativar' : 'ativar'}">
-                        <i class="${toggleIcon}"></i>
+                    <button class="site-status" onclick="toggleSiteStatus('${site.name}', '${toggleAction}', this)" title="Clique para ${site.active ? 'desativar' : 'ativar'}">
+                        <i class="${toggleIcon}" style="color: ${iconColor}"></i>
                     </button>
                 </div>
                 
@@ -894,17 +894,17 @@ async function toggleSiteStatus(siteName, action, buttonElement) {
             const newClass = action === 'enable' ? 'status-active' : 'status-inactive';
             
             // Update button properties
-            statusButton.className = `site-status ${newClass}`;
+            statusButton.className = 'site-status';
             iconElement.className = newIcon;
             statusButton.onclick = () => toggleSiteStatus(siteName, newAction, statusButton);
             statusButton.title = `Clique para ${action === 'enable' ? 'desativar' : 'ativar'}`;
             statusButton.disabled = false;
             
-            // Force color update
+            // Force color update directly on icon
             if (action === 'enable') {
-                statusButton.style.color = 'var(--success)';
+                iconElement.style.color = 'var(--success)';
             } else {
-                statusButton.style.color = 'var(--danger)';
+                iconElement.style.color = 'var(--danger)';
             }
             
         } else {
