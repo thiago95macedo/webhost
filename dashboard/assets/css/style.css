@@ -341,18 +341,13 @@ body {
 }
 
 .site-status {
-    padding: 0.5rem;
     font-size: 1.5rem;
     border: none;
     cursor: pointer;
     transition: all 0.2s ease;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 3rem;
-    height: 3rem;
-    min-width: 3rem;
     background: transparent;
+    padding: 0;
+    margin: 0;
 }
 
 .site-status:hover {
