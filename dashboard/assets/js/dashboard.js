@@ -175,7 +175,6 @@ class WordPressDashboard {
 
     createSiteCard(site) {
         const statusClass = site.active ? 'status-active' : 'status-inactive';
-        const statusText = site.active ? 'Ativo' : 'Inativo';
         const toggleAction = site.active ? 'disable' : 'enable';
         const toggleIcon = site.active ? 'fas fa-toggle-on' : 'fas fa-toggle-off';
         
@@ -183,9 +182,8 @@ class WordPressDashboard {
             <div class="site-card">
                 <div class="site-header">
                     <div class="site-name">${site.name}</div>
-                    <button class="site-status ${statusClass}" onclick="toggleSiteStatus('${site.name}', '${toggleAction}')" title="Clique para ${site.active ? 'desativar' : 'ativar'}">
+                    <button class="site-status ${statusClass}" onclick="toggleSiteStatus('${site.name}', '${toggleAction}', this)" title="Clique para ${site.active ? 'desativar' : 'ativar'}">
                         <i class="${toggleIcon}"></i>
-                        ${statusText}
                     </button>
                 </div>
                 
@@ -220,7 +218,6 @@ class WordPressDashboard {
 
     createPhpSiteCard(site) {
         const statusClass = site.active ? 'status-active' : 'status-inactive';
-        const statusText = site.active ? 'Ativo' : 'Inativo';
         const toggleAction = site.active ? 'disable' : 'enable';
         const toggleIcon = site.active ? 'fas fa-toggle-on' : 'fas fa-toggle-off';
         
@@ -228,9 +225,8 @@ class WordPressDashboard {
             <div class="site-card">
                 <div class="site-header">
                     <div class="site-name">${site.name}</div>
-                    <button class="site-status ${statusClass}" onclick="toggleSiteStatus('${site.name}', '${toggleAction}')" title="Clique para ${site.active ? 'desativar' : 'ativar'}">
+                    <button class="site-status ${statusClass}" onclick="toggleSiteStatus('${site.name}', '${toggleAction}', this)" title="Clique para ${site.active ? 'desativar' : 'ativar'}">
                         <i class="${toggleIcon}"></i>
-                        ${statusText}
                     </button>
                 </div>
                 
@@ -257,7 +253,6 @@ class WordPressDashboard {
 
     createHtmlSiteCard(site) {
         const statusClass = site.active ? 'status-active' : 'status-inactive';
-        const statusText = site.active ? 'Ativo' : 'Inativo';
         const toggleAction = site.active ? 'disable' : 'enable';
         const toggleIcon = site.active ? 'fas fa-toggle-on' : 'fas fa-toggle-off';
         
@@ -265,9 +260,8 @@ class WordPressDashboard {
             <div class="site-card">
                 <div class="site-header">
                     <div class="site-name">${site.name}</div>
-                    <button class="site-status ${statusClass}" onclick="toggleSiteStatus('${site.name}', '${toggleAction}')" title="Clique para ${site.active ? 'desativar' : 'ativar'}">
+                    <button class="site-status ${statusClass}" onclick="toggleSiteStatus('${site.name}', '${toggleAction}', this)" title="Clique para ${site.active ? 'desativar' : 'ativar'}">
                         <i class="${toggleIcon}"></i>
-                        ${statusText}
                     </button>
                 </div>
                 
@@ -867,12 +861,13 @@ function closeModal() {
 }
 
 // Toggle site status (enable/disable)
-async function toggleSiteStatus(siteName, action) {
-    const statusButton = event.target.closest('.site-status');
-    const originalHTML = statusButton.innerHTML;
+async function toggleSiteStatus(siteName, action, buttonElement) {
+    const statusButton = buttonElement;
+    const iconElement = statusButton.querySelector('i');
+    const originalIcon = iconElement.className;
     
-    // Show loading state
-    statusButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processando...';
+    // Show loading state - apenas no ícone
+    iconElement.className = 'fas fa-spinner fa-spin';
     statusButton.disabled = true;
     
     try {
@@ -893,19 +888,24 @@ async function toggleSiteStatus(siteName, action) {
             // Show success message
             dashboard.showNotification(data.message, 'success');
             
-            // Reload sites to reflect changes
-            setTimeout(() => {
-                dashboard.loadWordPressSites();
-                dashboard.loadPhpSites();
-                dashboard.loadHtmlSites();
-            }, 500);
+            // Update button state immediately
+            const newAction = action === 'enable' ? 'disable' : 'enable';
+            const newIcon = action === 'enable' ? 'fas fa-toggle-on' : 'fas fa-toggle-off';
+            const newClass = action === 'enable' ? 'status-active' : 'status-inactive';
+            
+            // Update button properties
+            statusButton.className = `site-status ${newClass}`;
+            iconElement.className = newIcon;
+            statusButton.onclick = () => toggleSiteStatus(siteName, newAction, statusButton);
+            statusButton.title = `Clique para ${action === 'enable' ? 'desativar' : 'ativar'}`;
+            statusButton.disabled = false;
             
         } else {
             // Show error message
             dashboard.showNotification(data.message, 'error');
             
             // Restore original state
-            statusButton.innerHTML = originalHTML;
+            iconElement.className = originalIcon;
             statusButton.disabled = false;
         }
         
@@ -914,7 +914,7 @@ async function toggleSiteStatus(siteName, action) {
         dashboard.showNotification('Erro de conexão ao alterar status do site', 'error');
         
         // Restore original state
-        statusButton.innerHTML = originalHTML;
+        iconElement.className = originalIcon;
         statusButton.disabled = false;
     }
 }

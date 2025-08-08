@@ -341,18 +341,18 @@ body {
 }
 
 .site-status {
-    padding: 0.2rem 0.6rem;
-    border-radius: 20px;
-    font-size: 0.65rem;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    padding: 0.3rem;
+    border-radius: 50%;
+    font-size: 1rem;
     border: none;
     cursor: pointer;
     transition: all 0.2s ease;
     display: inline-flex;
     align-items: center;
-    gap: 0.3rem;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    min-width: 2rem;
 }
 
 .site-status:hover {
