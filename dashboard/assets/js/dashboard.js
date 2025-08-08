@@ -176,7 +176,7 @@ class WordPressDashboard {
     createSiteCard(site) {
         const toggleAction = site.active ? 'disable' : 'enable';
         const toggleIcon = site.active ? 'fas fa-toggle-on' : 'fas fa-toggle-off';
-        const iconColor = site.active ? 'var(--success)' : 'var(--danger)';
+        const iconColor = site.active ? '#16a34a' : '#dc2626';
         
         return `
             <div class="site-card">
@@ -219,7 +219,7 @@ class WordPressDashboard {
     createPhpSiteCard(site) {
         const toggleAction = site.active ? 'disable' : 'enable';
         const toggleIcon = site.active ? 'fas fa-toggle-on' : 'fas fa-toggle-off';
-        const iconColor = site.active ? 'var(--success)' : 'var(--danger)';
+        const iconColor = site.active ? '#16a34a' : '#dc2626';
         
         return `
             <div class="site-card">
@@ -254,7 +254,7 @@ class WordPressDashboard {
     createHtmlSiteCard(site) {
         const toggleAction = site.active ? 'disable' : 'enable';
         const toggleIcon = site.active ? 'fas fa-toggle-on' : 'fas fa-toggle-off';
-        const iconColor = site.active ? 'var(--success)' : 'var(--danger)';
+        const iconColor = site.active ? '#16a34a' : '#dc2626';
         
         return `
             <div class="site-card">
@@ -885,13 +885,11 @@ async function toggleSiteStatus(siteName, action, buttonElement) {
         const data = await response.json();
         
         if (data.success) {
-            // Show success message
-            dashboard.showNotification(data.message, 'success');
+            console.log('Toggle successful:', data);
             
             // Update button state immediately
             const newAction = action === 'enable' ? 'disable' : 'enable';
             const newIcon = action === 'enable' ? 'fas fa-toggle-on' : 'fas fa-toggle-off';
-            const newClass = action === 'enable' ? 'status-active' : 'status-inactive';
             
             // Update button properties
             statusButton.className = 'site-status';
@@ -902,14 +900,15 @@ async function toggleSiteStatus(siteName, action, buttonElement) {
             
             // Force color update directly on icon
             if (action === 'enable') {
-                iconElement.style.color = 'var(--success)';
+                iconElement.style.color = '#16a34a';
             } else {
-                iconElement.style.color = 'var(--danger)';
+                iconElement.style.color = '#dc2626';
             }
             
+            console.log('Button updated successfully');
+            
         } else {
-            // Show error message
-            dashboard.showNotification(data.message, 'error');
+            console.error('Toggle failed:', data);
             
             // Restore original state
             iconElement.className = originalIcon;
@@ -918,7 +917,6 @@ async function toggleSiteStatus(siteName, action, buttonElement) {
         
     } catch (error) {
         console.error('Erro ao alterar status do site:', error);
-        dashboard.showNotification('Erro de conexão ao alterar status do site', 'error');
         
         // Restore original state
         iconElement.className = originalIcon;
