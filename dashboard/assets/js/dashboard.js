@@ -176,12 +176,17 @@ class WordPressDashboard {
     createSiteCard(site) {
         const statusClass = site.active ? 'status-active' : 'status-inactive';
         const statusText = site.active ? 'Ativo' : 'Inativo';
+        const toggleAction = site.active ? 'disable' : 'enable';
+        const toggleIcon = site.active ? 'fas fa-toggle-on' : 'fas fa-toggle-off';
         
         return `
             <div class="site-card">
                 <div class="site-header">
                     <div class="site-name">${site.name}</div>
-                    <span class="site-status ${statusClass}">${statusText}</span>
+                    <button class="site-status ${statusClass}" onclick="toggleSiteStatus('${site.name}', '${toggleAction}')" title="Clique para ${site.active ? 'desativar' : 'ativar'}">
+                        <i class="${toggleIcon}"></i>
+                        ${statusText}
+                    </button>
                 </div>
                 
                 <div class="site-info">
@@ -216,12 +221,17 @@ class WordPressDashboard {
     createPhpSiteCard(site) {
         const statusClass = site.active ? 'status-active' : 'status-inactive';
         const statusText = site.active ? 'Ativo' : 'Inativo';
+        const toggleAction = site.active ? 'disable' : 'enable';
+        const toggleIcon = site.active ? 'fas fa-toggle-on' : 'fas fa-toggle-off';
         
         return `
             <div class="site-card">
                 <div class="site-header">
                     <div class="site-name">${site.name}</div>
-                    <span class="site-status ${statusClass}">${statusText}</span>
+                    <button class="site-status ${statusClass}" onclick="toggleSiteStatus('${site.name}', '${toggleAction}')" title="Clique para ${site.active ? 'desativar' : 'ativar'}">
+                        <i class="${toggleIcon}"></i>
+                        ${statusText}
+                    </button>
                 </div>
                 
                 <div class="site-info">
@@ -248,12 +258,17 @@ class WordPressDashboard {
     createHtmlSiteCard(site) {
         const statusClass = site.active ? 'status-active' : 'status-inactive';
         const statusText = site.active ? 'Ativo' : 'Inativo';
+        const toggleAction = site.active ? 'disable' : 'enable';
+        const toggleIcon = site.active ? 'fas fa-toggle-on' : 'fas fa-toggle-off';
         
         return `
             <div class="site-card">
                 <div class="site-header">
                     <div class="site-name">${site.name}</div>
-                    <span class="site-status ${statusClass}">${statusText}</span>
+                    <button class="site-status ${statusClass}" onclick="toggleSiteStatus('${site.name}', '${toggleAction}')" title="Clique para ${site.active ? 'desativar' : 'ativar'}">
+                        <i class="${toggleIcon}"></i>
+                        ${statusText}
+                    </button>
                 </div>
                 
                 <div class="site-info">
@@ -849,6 +864,59 @@ function showSettings() {
 function closeModal() {
     const modal = document.getElementById('modal-overlay');
     modal.classList.remove('active');
+}
+
+// Toggle site status (enable/disable)
+async function toggleSiteStatus(siteName, action) {
+    const statusButton = event.target.closest('.site-status');
+    const originalHTML = statusButton.innerHTML;
+    
+    // Show loading state
+    statusButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processando...';
+    statusButton.disabled = true;
+    
+    try {
+        const response = await fetch('api/toggle-site.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                site_name: siteName,
+                action: action
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            // Show success message
+            dashboard.showNotification(data.message, 'success');
+            
+            // Reload sites to reflect changes
+            setTimeout(() => {
+                dashboard.loadWordPressSites();
+                dashboard.loadPhpSites();
+                dashboard.loadHtmlSites();
+            }, 500);
+            
+        } else {
+            // Show error message
+            dashboard.showNotification(data.message, 'error');
+            
+            // Restore original state
+            statusButton.innerHTML = originalHTML;
+            statusButton.disabled = false;
+        }
+        
+    } catch (error) {
+        console.error('Erro ao alterar status do site:', error);
+        dashboard.showNotification('Erro de conexão ao alterar status do site', 'error');
+        
+        // Restore original state
+        statusButton.innerHTML = originalHTML;
+        statusButton.disabled = false;
+    }
 }
 
 // Initialize dashboard when DOM is loaded
