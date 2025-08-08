@@ -900,6 +900,13 @@ async function toggleSiteStatus(siteName, action, buttonElement) {
             statusButton.title = `Clique para ${action === 'enable' ? 'desativar' : 'ativar'}`;
             statusButton.disabled = false;
             
+            // Force color update
+            if (action === 'enable') {
+                statusButton.style.color = 'var(--success)';
+            } else {
+                statusButton.style.color = 'var(--danger)';
+            }
+            
         } else {
             // Show error message
             dashboard.showNotification(data.message, 'error');

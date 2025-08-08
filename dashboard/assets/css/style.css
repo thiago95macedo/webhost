@@ -341,18 +341,19 @@ body {
 }
 
 .site-status {
-    padding: 0.3rem;
+    padding: 0.5rem;
     border-radius: 50%;
-    font-size: 1rem;
+    font-size: 1.5rem;
     border: none;
     cursor: pointer;
     transition: all 0.2s ease;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 2rem;
-    height: 2rem;
-    min-width: 2rem;
+    width: 3rem;
+    height: 3rem;
+    min-width: 3rem;
+    background: transparent;
 }
 
 .site-status:hover {
@@ -371,25 +372,19 @@ body {
 }
 
 .status-active {
-    background: rgba(22, 163, 74, 0.15);
     color: var(--success);
-    border: 1px solid rgba(22, 163, 74, 0.3);
 }
 
 .status-active:hover {
-    background: rgba(22, 163, 74, 0.25);
-    border-color: rgba(22, 163, 74, 0.5);
+    color: #15803d;
 }
 
 .status-inactive {
-    background: rgba(220, 38, 38, 0.15);
     color: var(--danger);
-    border: 1px solid rgba(220, 38, 38, 0.3);
 }
 
 .status-inactive:hover {
-    background: rgba(220, 38, 38, 0.25);
-    border-color: rgba(220, 38, 38, 0.5);
+    color: #b91c1c;
 }
 
 .site-info {
