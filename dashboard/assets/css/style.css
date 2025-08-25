@@ -18,6 +18,12 @@
     --accent-green: #4a9208;        /* Variações temáticas, categorização */
     --accent-orange: #80470a;       /* Contraste máximo, elementos opostos */
     
+    /* Cores de Tipos de Projeto */
+    --php-color: #777bb4;           /* Cor para projetos PHP */
+    --html-color: #e34f26;          /* Cor para projetos HTML */
+    --wordpress-color: #21759b;     /* Cor para projetos WordPress */
+    --default-color: #6c757f;       /* Cor padrão para outros tipos */
+    
     /* Cores Neutras */
     --white: #ffffff;               /* Fundo principal, cards */
     --light-gray: #f5f5f5;          /* Backgrounds alternativos */
@@ -847,4 +853,100 @@ body {
 
 .mt-1 { margin-top: 0.5rem; }
 .mt-2 { margin-top: 1rem; }
-.mt-3 { margin-top: 1.5rem; } 
+.mt-3 { margin-top: 1.5rem; }
+
+/* Estilos para Projetos Detectados */
+.info-message {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 2rem;
+    background: var(--white);
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-left: 4px solid var(--info);
+}
+
+.info-message i {
+    font-size: 1.5rem;
+    color: var(--info);
+}
+
+.info-message p {
+    margin: 0;
+    color: var(--text-primary);
+    font-size: 1rem;
+}
+
+.error-message {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 2rem;
+    background: var(--white);
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-left: 4px solid var(--danger);
+}
+
+.error-message i {
+    font-size: 1.5rem;
+    color: var(--danger);
+}
+
+.error-message p {
+    margin: 0;
+    color: var(--text-primary);
+    font-size: 1rem;
+}
+
+/* Cores específicas para tipos de projeto */
+.php-color {
+    background: var(--php-color);
+}
+
+.html-color {
+    background: var(--html-color);
+}
+
+.wordpress-color {
+    background: var(--wordpress-color);
+}
+
+.default-color {
+    background: var(--default-color);
+}
+
+/* Status para projetos detectados */
+.status-warning {
+    color: var(--warning);
+}
+
+.status-warning i {
+    color: var(--warning);
+}
+
+.status-active {
+    color: var(--success);
+}
+
+.status-active i {
+    color: var(--success);
+}
+
+/* Estilos para lista de arquivos do projeto */
+.project-files {
+    padding: 1rem;
+}
+
+.project-files p {
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+}
+
+.file-list {
+    background: var(--light-gray);
+    padding: 1rem;
+    border-radius: 8px;
+    border: 1px solid var(--border-medium);
+} 

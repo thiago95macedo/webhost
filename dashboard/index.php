@@ -204,6 +204,26 @@ header("Expires: 0");
                     </div>
                 </div>
             </section>
+
+            <!-- Projetos Detectados -->
+            <section class="dashboard-section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-search"></i>
+                        Projetos Detectados
+                    </h2>
+                    <button class="btn btn-info" onclick="detectProjects()">
+                        <i class="fas fa-search"></i>
+                        Detectar Projetos
+                    </button>
+                </div>
+                <div class="sites-container" id="detected-projects-container">
+                    <div class="info-message">
+                        <i class="fas fa-info-circle"></i>
+                        <p>Clique em "Detectar Projetos" para encontrar projetos existentes que precisam de configuração web</p>
+                    </div>
+                </div>
+            </section>
         </main>
 
         <!-- Footer -->

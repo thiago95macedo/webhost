@@ -942,4 +942,160 @@ document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') {
         closeModal();
     }
-}); 
+});
+
+// Função para detectar projetos existentes
+async function detectProjects() {
+    const container = document.getElementById('detected-projects-container');
+    
+    // Mostrar loading
+    container.innerHTML = `
+        <div class="loading-spinner">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>Detectando projetos...</p>
+        </div>
+    `;
+    
+    try {
+        const response = await fetch('api/detect-projects.php');
+        const data = await response.json();
+        
+        if (data.success) {
+            if (data.count === 0) {
+                container.innerHTML = `
+                    <div class="info-message">
+                        <i class="fas fa-check-circle"></i>
+                        <p>Nenhum projeto não configurado encontrado!</p>
+                    </div>
+                `;
+            } else {
+                displayDetectedProjects(data.projects, container);
+            }
+        } else {
+            container.innerHTML = `
+                <div class="error-message">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <p>Erro ao detectar projetos: ${data.message}</p>
+                </div>
+            `;
+        }
+    } catch (error) {
+        console.error('Erro ao detectar projetos:', error);
+        container.innerHTML = `
+            <div class="error-message">
+                <i class="fas fa-exclamation-triangle"></i>
+                <p>Erro de conexão ao detectar projetos</p>
+            </div>
+        `;
+    }
+}
+
+function displayDetectedProjects(projects, container) {
+    let html = '<div class="sites-grid">';
+    
+    projects.forEach(project => {
+        const typeIcon = getProjectTypeIcon(project.type);
+        const typeColor = getProjectTypeColor(project.type);
+        const statusClass = project.has_index ? 'status-active' : 'status-warning';
+        const statusText = project.has_index ? 'Pronto para configurar' : 'Sem arquivo index';
+        
+        html += `
+            <div class="site-card">
+                <div class="site-header">
+                    <div class="site-icon ${typeColor}">
+                        <i class="${typeIcon}"></i>
+                    </div>
+                    <div class="site-info">
+                        <h3>${project.name}</h3>
+                        <p class="site-type">${project.type.toUpperCase()}</p>
+                    </div>
+                    <div class="site-status ${statusClass}">
+                        <i class="fas fa-circle"></i>
+                        <span>${statusText}</span>
+                    </div>
+                </div>
+                
+                <div class="site-details">
+                    <p><strong>Diretório:</strong> ${project.directory}</p>
+                    <p><strong>Porta sugerida:</strong> ${project.suggested_port}</p>
+                    <p><strong>Detectado em:</strong> ${project.detected_at}</p>
+                    ${project.is_wordpress ? '<p><strong>WordPress detectado</strong></p>' : ''}
+                </div>
+                
+                <div class="site-actions">
+                    <button class="btn btn-success" onclick="configureProject('${project.name}', '${project.type}', ${project.suggested_port})">
+                        <i class="fas fa-cog"></i>
+                        Configurar
+                    </button>
+                    <button class="btn btn-secondary" onclick="viewProjectFiles('${project.directory}')">
+                        <i class="fas fa-folder-open"></i>
+                        Ver Arquivos
+                    </button>
+                </div>
+            </div>
+        `;
+    });
+    
+    html += '</div>';
+    container.innerHTML = html;
+}
+
+function getProjectTypeIcon(type) {
+    const icons = {
+        'php': 'fab fa-php',
+        'html': 'fab fa-html5',
+        'wordpress': 'fab fa-wordpress'
+    };
+    return icons[type] || 'fas fa-folder';
+}
+
+function getProjectTypeColor(type) {
+    const colors = {
+        'php': 'php-color',
+        'html': 'html-color',
+        'wordpress': 'wordpress-color'
+    };
+    return colors[type] || 'default-color';
+}
+
+async function configureProject(projectName, projectType, port) {
+    try {
+        const response = await fetch('api/detect-projects.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                project_name: projectName,
+                project_type: projectType,
+                port: port
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            showNotification('Projeto configurado com sucesso!', 'success');
+            // Recarregar dados do dashboard
+            refreshData();
+            // Recarregar projetos detectados
+            detectProjects();
+        } else {
+            showNotification('Erro ao configurar projeto: ' + data.message, 'error');
+        }
+    } catch (error) {
+        console.error('Erro ao configurar projeto:', error);
+        showNotification('Erro de conexão ao configurar projeto', 'error');
+    }
+}
+
+function viewProjectFiles(directory) {
+    showModal('Arquivos do Projeto', `
+        <div class="project-files">
+            <p><strong>Diretório:</strong> ${directory}</p>
+            <div class="file-list">
+                <p>Lista de arquivos será exibida aqui...</p>
+            </div>
+        </div>
+    `);
+} 
